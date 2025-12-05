@@ -72,7 +72,9 @@ export interface ComponentContactButton {
 export type ServicePageBlock = 
   | ComponentHeading 
   | ComponentRichText 
-  | ComponentContactButton;
+  | ComponentContactButton
+  | ComponentBackgroundImage 
+  | ComponentFaqItem;
 
 export interface ServicePageData {
   id: number;
@@ -81,6 +83,27 @@ export interface ServicePageData {
   metaTitle: string;
   metaDescription: string;
   servicePage: ServicePageBlock[];
+}
+export interface ComponentBackgroundImage {
+  __component: "elements.background-image";
+  id: number;
+  background: {
+    id: number;
+    url: string;
+    alternativeText?: string;
+    width: number;
+    height: number;
+    mime: string;
+  };
+}
+
+// [ADD THIS] FAQ Interface
+export interface ComponentFaqItem {
+  __component: "elements.faq-item";
+  id: number;
+  title: string;
+  isAccordion: boolean;
+  content: ServiceRichTextNode[]; 
 }
 
 // --- NEW INTERFACES (Landing Page / Hero) ---

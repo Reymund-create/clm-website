@@ -1,6 +1,7 @@
 import React from 'react';
+import Image from 'next/image';
 
-// --- 1. Type Definitions (Matched to api.ts) ---
+// --- 1. Type Definitions ---
 
 interface RichTextChild {
   text: string;
@@ -15,7 +16,7 @@ interface RichTextChild {
 interface RichTextNode {
   type: "paragraph" | "list" | "list-item" | "heading" | "link" | "quote";
   format?: "unordered" | "ordered";
-  url?: string; // For links
+  url?: string;
   children: (RichTextNode | RichTextChild)[];
 }
 
@@ -38,10 +39,33 @@ interface ComponentContactButton {
   phoneNumber: string;
 }
 
+interface ComponentBackgroundImage {
+  __component: "elements.background-image";
+  id: number;
+  background: {
+    id: number;
+    url: string;
+    alternativeText?: string;
+    width: number;
+    height: number;
+    mime: string;
+  };
+}
+
+interface ComponentFaqItem {
+  __component: "elements.faq-item";
+  id: number;
+  title: string;
+  isAccordion: boolean;
+  content: RichTextNode[]; 
+}
+
 export type ServicePageBlock = 
   | ComponentHeading 
   | ComponentRichText 
-  | ComponentContactButton;
+  | ComponentContactButton
+  | ComponentBackgroundImage
+  | ComponentFaqItem;
 
 interface BlockRendererProps {
   blocks: ServicePageBlock[];
@@ -57,12 +81,10 @@ const renderRichText = (nodes: (RichTextNode | RichTextChild)[]) => {
       const textNode = node as RichTextChild;
       let content: React.ReactNode = textNode.text;
 
-      // Apply formatting layers
       if (textNode.bold) content = <strong className="font-bold text-gray-900">{content}</strong>;
-      if (textNode.italic) content = <em className="italic">{content}</em>;
-      if (textNode.underline) content = <u className="underline underline-offset-2">{content}</u>;
-      if (textNode.strikethrough) content = <s className="line-through opacity-70">{content}</s>;
-      if (textNode.code) content = <code className="bg-gray-100 text-indigo-600 px-1 py-0.5 rounded text-sm font-mono">{content}</code>;
+      if (textNode.italic) content = <em className="italic text-gray-700">{content}</em>;
+      if (textNode.underline) content = <span className="border-b-2 border-indigo-400 pb-0.5">{content}</span>;
+      if (textNode.code) content = <code className="bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded text-sm font-mono border border-indigo-100">{content}</code>;
 
       return <span key={index}>{content}</span>;
     }
@@ -72,50 +94,59 @@ const renderRichText = (nodes: (RichTextNode | RichTextChild)[]) => {
     
     switch (blockNode.type) {
       case 'paragraph':
-        // Handle empty paragraphs (often created by double spaces in editor)
+        // Check for empty paragraphs
         if (blockNode.children.length === 0 || (blockNode.children.length === 1 && (blockNode.children[0] as RichTextChild).text === "")) {
-            return <br key={index} />; 
+            return <div key={index} className="h-6" />; 
         }
         return (
-          <p key={index} className="mb-4 text-gray-700 leading-relaxed">
+          <p key={index} className="mb-6 text-lg text-gray-600 leading-8 last:mb-0">
             {renderRichText(blockNode.children)}
           </p>
         );
 
       case 'heading':
-        // Strapi sometimes nests headings inside Rich Text
-        return <h3 key={index} className="text-xl font-bold text-gray-900 mt-6 mb-3">{renderRichText(blockNode.children)}</h3>;
+        return <h3 key={index} className="text-2xl font-bold text-gray-900 mt-10 mb-4 tracking-tight">{renderRichText(blockNode.children)}</h3>;
 
       case 'list':
-        // --- FIX: Handle both Unordered (ul) and Ordered (ol) ---
         if (blockNode.format === 'ordered') {
             return (
-                <ol key={index} className="list-decimal pl-5 mb-6 text-gray-700 space-y-2 marker:text-indigo-500 font-medium">
+                <ol key={index} className="list-decimal pl-6 mb-8 space-y-3 text-lg text-gray-700 marker:text-indigo-600 marker:font-bold">
                   {renderRichText(blockNode.children)}
                 </ol>
             );
         }
         return (
-          <ul key={index} className="list-disc pl-5 mb-6 text-gray-700 space-y-2 marker:text-indigo-500">
+          // Marketing Style List (Using Checkmarks)
+          <ul key={index} className="mb-8 space-y-4">
             {renderRichText(blockNode.children)}
           </ul>
         );
 
       case 'list-item':
-        return <li key={index} className="pl-1">{renderRichText(blockNode.children)}</li>;
+        return (
+          <li key={index} className="flex items-start text-lg text-gray-700">
+             {/* Custom Checkmark Bullet */}
+             <span className="mt-1.5 mr-3 flex-shrink-0 text-indigo-600">
+               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>
+             </span>
+             <span className="leading-relaxed">{renderRichText(blockNode.children)}</span>
+          </li>
+        );
 
       case 'link':
         return (
-            <a key={index} href={blockNode.url} className="text-indigo-600 hover:underline font-medium">
+            <a key={index} href={blockNode.url} className="text-indigo-600 font-semibold border-b border-indigo-200 hover:border-indigo-600 transition-colors">
                 {renderRichText(blockNode.children)}
             </a>
         );
 
       case 'quote':
         return (
-            <blockquote key={index} className="border-l-4 border-indigo-500 pl-4 italic text-gray-600 my-4">
-                {renderRichText(blockNode.children)}
-            </blockquote>
+            <figure key={index} className="my-10 border-l-4 border-indigo-600 bg-gray-50 p-6 rounded-r-xl">
+                <blockquote className="text-xl italic text-gray-800 leading-relaxed">
+                  "{renderRichText(blockNode.children)}"
+                </blockquote>
+            </figure>
         );
 
       default:
@@ -126,60 +157,142 @@ const renderRichText = (nodes: (RichTextNode | RichTextChild)[]) => {
 
 // --- 3. Main Component ---
 const BlockRenderer = ({ blocks }: BlockRendererProps) => {
-  // --- DEBUGGING: Check what React is actually receiving ---
-  console.log("BlockRenderer received blocks:", blocks);
+  if (!blocks || blocks.length === 0) return null;
 
-  if (!blocks || blocks.length === 0) {
-      console.warn("BlockRenderer: No blocks to render");
-      return null;
-  }
+  // --- A. Extract Hero Elements ---
+  const heroImageBlock = blocks.find(
+    (b) => b.__component === "elements.background-image"
+  ) as ComponentBackgroundImage | undefined;
+
+  const heroHeadingBlock = blocks.find(
+    (b) => b.__component === "elements.heading"
+  ) as ComponentHeading | undefined;
+
+  // --- B. Filter Remaining Blocks ---
+  const contentBlocks = blocks.filter((b) => {
+    const isHeroImage = 
+      heroImageBlock && 
+      b.id === heroImageBlock.id && 
+      b.__component === "elements.background-image";
+
+    const isHeroHeading = 
+      heroHeadingBlock && 
+      b.id === heroHeadingBlock.id && 
+      b.__component === "elements.heading";
+
+    return !isHeroImage && !isHeroHeading;
+  });
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      {blocks.map((block, i) => {
-        // Fallback for ID if missing
-        const key = block.id || i; 
+    <div className="bg-white">
+      
+      {/* --- HERO BANNER --- */}
+      <section className="relative w-full min-h-[500px] flex items-center justify-center bg-gray-900 overflow-hidden">
+        
+        {/* Background Layer */}
+        {heroImageBlock?.background?.url && (
+          <div className="absolute inset-0 w-full h-full">
+            <Image
+              src={heroImageBlock.background.url}
+              alt={heroImageBlock.background.alternativeText || "Hero Background"}
+              fill
+              className="object-cover" 
+              priority 
+            />
+            {/* Dark Overlay (60%) */}
+            <div className="absolute inset-0 bg-black/60" />
+          </div>
+        )}
 
-        switch (block.__component) {
-          
-          case 'elements.heading':
-            return (
-              <h2 key={key} className="text-3xl md:text-4xl font-bold text-gray-900 mt-12 mb-6">
-                {block.heading}
-              </h2>
-            );
+        {/* Content Layer */}
+        {heroHeadingBlock && (
+          <div className="relative z-10 max-w-5xl mx-auto px-6 text-center animate-fadeIn">
+            <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight tracking-tight drop-shadow-xl">
+              {heroHeadingBlock.heading}
+            </h1>
+            <div className="flex justify-center mt-8">
+               <div className="w-24 h-1.5 bg-indigo-500 rounded-full shadow-lg"></div>
+            </div>
+          </div>
+        )}
+      </section>
 
-          case 'elements.rich-text':
-            return (
-              <div key={key} className="prose prose-lg max-w-none text-gray-600">
-                {renderRichText(block.richText)}
-              </div>
-            );
+      {/* --- MAIN CONTENT --- */}
+      <div className="max-w-4xl mx-auto px-6 py-24">
+        {contentBlocks.map((block, index) => {
+          const key = `${block.__component}-${block.id}-${index}`;
 
-          case 'elements.contact-button':
-            return (
-              <div key={key} className="mt-8 mb-12">
-                <a
-                  href={`tel:${block.phoneNumber}`}
-                  className="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5"
-                >
-                  {block.label}
-                  <span className="ml-2 opacity-90 border-l border-indigo-400 pl-2">
-                    {block.phoneNumber}
-                  </span>
-                </a>
-              </div>
-            );
+          switch (block.__component) {
+            case 'elements.heading':
+              return (
+                <div key={key} className="mt-20 mb-10">
+                  <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
+                    {block.heading}
+                  </h2>
+                  <div className="w-12 h-1 bg-indigo-600 mt-4 rounded-full"></div>
+                </div>
+              );
 
-          default:
-            // Helpful for debugging if a new component is added in Strapi but not here
-            console.warn("Unknown component type:", (block as any).__component);
-            return null;
-        }
-      })}
+            case 'elements.rich-text':
+              return (
+                <div key={key} className="prose prose-lg max-w-none text-gray-600 prose-headings:text-gray-900 prose-strong:text-gray-900">
+                  {renderRichText(block.richText)}
+                </div>
+              );
+
+            case 'elements.faq-item':
+              return (
+                <div key={key} className="mb-4">
+                  <details className="group rounded-xl bg-gray-50 border border-transparent hover:border-indigo-100 hover:bg-white hover:shadow-lg transition-all duration-300">
+                    <summary className="flex cursor-pointer items-center justify-between p-6 font-semibold text-lg text-gray-900 select-none">
+                      <span>{block.title}</span>
+                      <span className="ml-4 flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 group-open:bg-indigo-600 group-open:text-white transition-all duration-300">
+                        <svg className="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                      </span>
+                    </summary>
+                    <div className="px-6 pb-6 pt-0 text-gray-600 leading-relaxed animate-fadeIn">
+                      {renderRichText(block.content)}
+                    </div>
+                  </details>
+                </div>
+              );
+
+            case 'elements.background-image':
+              if (!block.background || !block.background.url) return null;
+              return (
+                <div key={key} className="relative w-full my-16 rounded-2xl overflow-hidden shadow-2xl ring-1 ring-gray-900/5">
+                  <Image
+                    src={block.background.url}
+                    alt={block.background.alternativeText || "Content Image"}
+                    width={block.background.width}
+                    height={block.background.height}
+                    className="w-full h-auto object-cover transform hover:scale-[1.02] transition-transform duration-700 ease-out"
+                  />
+                </div>
+              );
+
+            // [UPDATED] Contact Button with specific styling
+            case 'elements.contact-button':
+              return (
+                <div key={key} className="mt-16 mb-20 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
+                  <a
+                    href={`tel:${block.phoneNumber}`}
+                    className="transform rounded-lg bg-[#267b9a] px-8 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 hover:bg-[#216a86]"
+                  >
+                    {block.label} 
+                    {/* Optional: Add phone number if you want it visible, e.g.: */}
+                     {/* - {block.phoneNumber} */}
+                  </a>
+                </div>
+              );
+
+            default:
+              return null;
+          }
+        })}
+      </div>
     </div>
   );
 };
 
-// --- EXPORT DEFAULT ---
 export default BlockRenderer;

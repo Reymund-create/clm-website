@@ -69,7 +69,7 @@ const VideoHero: React.FC<VideoHeroProps> = ({ data }) => {
             return (
               <a
                 key={btn.id}
-                href={btn.href}
+                href={`tel: 630-447-8434`}
                 target={btn.isExternal ? "_blank" : "_self"} // Safe check for undefined
                 rel={btn.isExternal ? "noopener noreferrer" : undefined}
                 className={

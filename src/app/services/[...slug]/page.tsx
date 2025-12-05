@@ -10,27 +10,44 @@ interface PageProps {
   }>;
 }
 
-// 2. Generate Metadata
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  // Await the params object (Next.js 15 requirement)
-  const resolvedParams = await params;
-  
-  // Extract the specific slug string (usually the last item in the array)
-  const slugString = resolvedParams.slug[resolvedParams.slug.length - 1];
+// 1. Define strict types
+type Props = {
+  params: Promise<{ slug: string[] }>;
+};
 
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const resolvedParams = await params;
+
+  // Safety check
+  if (!resolvedParams.slug?.length) {
+    return { title: "Page Not Found" };
+  }
+
+  const slugString = resolvedParams.slug[resolvedParams.slug.length - 1];
   const data = await getServicePageBySlug(slugString);
 
   if (!data) {
-    return {
-      title: "Page Not Found",
-    };
+    return { title: "Page Not Found" };
   }
 
+  // --- Title Logic Start ---
+  const baseTitle = data.metaTitle || "Service Page";
+  const fullSuffix = " | Confluence Local Marketing"; // 29 chars
+  const shortSuffix = " | CLM"; // 6 chars
+  const maxChars = 60; // Standard Google SERP limit
+
+  // Check if the Base Title + Full Suffix fits within 60 characters
+  const finalTitle = (baseTitle.length + fullSuffix.length <= maxChars)
+    ? `${baseTitle}${fullSuffix}`
+    : `${baseTitle}${shortSuffix}`;
+  // --- Title Logic End ---
+
   return {
-    title: data.metaTitle || "Service Page",
+    title: finalTitle,
     description: data.metaDescription || "",
   };
 }
+
 
 // 3. Main Page Component
 export default async function ServiceDynamicPage({ params }: PageProps) {
