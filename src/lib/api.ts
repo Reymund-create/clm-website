@@ -69,21 +69,6 @@ export interface ComponentContactButton {
   phoneNumber: string;
 }
 
-export type ServicePageBlock = 
-  | ComponentHeading 
-  | ComponentRichText 
-  | ComponentContactButton
-  | ComponentBackgroundImage 
-  | ComponentFaqItem;
-
-export interface ServicePageData {
-  id: number;
-  documentId: string;
-  slug: string;
-  metaTitle: string;
-  metaDescription: string;
-  servicePage: ServicePageBlock[];
-}
 export interface ComponentBackgroundImage {
   __component: "elements.background-image";
   id: number;
@@ -97,13 +82,28 @@ export interface ComponentBackgroundImage {
   };
 }
 
-// [ADD THIS] FAQ Interface
 export interface ComponentFaqItem {
   __component: "elements.faq-item";
   id: number;
   title: string;
   isAccordion: boolean;
-  content: ServiceRichTextNode[]; 
+  content: ServiceRichTextNode[];
+}
+
+export type ServicePageBlock =
+  | ComponentHeading
+  | ComponentRichText
+  | ComponentContactButton
+  | ComponentBackgroundImage
+  | ComponentFaqItem;
+
+export interface ServicePageData {
+  id: number;
+  documentId: string;
+  slug: string;
+  metaTitle: string;
+  metaDescription: string;
+  servicePage: ServicePageBlock[];
 }
 
 // --- NEW INTERFACES (Landing Page / Hero) ---
@@ -120,6 +120,7 @@ export interface StrapiTextBlock {
 }
 
 export interface StrapiButton {
+  __component?: "elements.button"; // Added optional discriminator for reuse
   id: number;
   label: string;
   href: string;
@@ -143,12 +144,83 @@ export interface LandingPageData {
   button: StrapiButton[];
 }
 
+// --- NEW INTERFACES (Meet The Team) ---
+
+// Specific Image format for Team page (handles formats like small/medium/large)
+export interface StrapiImageFormat {
+  ext: string;
+  url: string;
+  hash: string;
+  mime: string;
+  name: string;
+  path: string | null;
+  size: number;
+  width: number;
+  height: number;
+}
+
+export interface MeetTheTeamImage {
+  id: number;
+  documentId: string;
+  url: string;
+  alternativeText: string | null;
+  width: number;
+  height: number;
+  formats: {
+    large?: StrapiImageFormat;
+    small?: StrapiImageFormat;
+    medium?: StrapiImageFormat;
+    thumbnail?: StrapiImageFormat;
+  };
+}
+
+// Reuse ComponentHeading and ComponentRichText where possible, 
+// but define unique ones for unique structures like CardItem.
+
+export interface MeetTheTeamBackground {
+  __component: "elements.background-image";
+  id: number;
+  background: MeetTheTeamImage;
+}
+
+export interface MeetTheTeamCardItem {
+  __component: "elements.card-item";
+  id: number;
+  title: string; // Name
+  description: string;
+  position: string | null;
+  image: MeetTheTeamImage | null;
+  icon: {
+    width: number;
+    height: number;
+    iconData: string; // SVG path
+    iconName: string;
+  };
+}
+
+export type MeetTheTeamBlock =
+  | MeetTheTeamBackground
+  | ComponentHeading
+  | ComponentRichText
+  | StrapiButton
+  | MeetTheTeamCardItem;
+
+export interface MeetTheTeamResponse {
+  data: {
+    id: number;
+    documentId: string;
+    metaTitle: string;
+    metaDescription: string;
+    meetTheTeam: MeetTheTeamBlock[];
+  };
+}
+
 // --- Logic (Navigation Tree) ---
 
 function recursivelyBuildPaths(items: NavigationItem[], parentPath: string = "") {
   items.forEach((item) => {
     if (item.type !== "EXTERNAL" && !item.path.startsWith("http")) {
-      const cleanSlug = item.path.replace(/^\//, ""); 
+      const cleanSlug = item.path.replace(/^\//, "");
       let fullPath = "";
 
       if (parentPath === "/") {
@@ -160,7 +232,7 @@ function recursivelyBuildPaths(items: NavigationItem[], parentPath: string = "")
       }
 
       if (!cleanSlug) fullPath = parentPath;
-      if (item.path === "/") fullPath = "/"; 
+      if (item.path === "/") fullPath = "/";
 
       item.path = fullPath;
     }
@@ -178,7 +250,7 @@ function buildNavigationTree(flatItems: StrapiNavItemRaw[]): NavigationItem[] {
   flatItems.forEach((raw) => {
     let initialPath = raw.externalPath || raw.path || "";
     if (initialPath === "/home" || raw.title === "Home") {
-        initialPath = "/";
+      initialPath = "/";
     }
 
     itemMap.set(raw.id, {
@@ -264,21 +336,12 @@ export async function getLandingPageData(): Promise<LandingPageData | null> {
   }
 }
 
-// --- NEW FETCHER: Service Page (Dynamic Route) ---
-
 export async function getServicePageBySlug(slug: string): Promise<ServicePageData | null> {
   try {
-    // ---------------------------------------------------------------------------
-    // IMPORTANT: Verify your Collection Name in Strapi
-    // If your collection is named "Service", use "/api/services"
-    // If it is named "Service Page", use "/api/service-pages"
-    // ---------------------------------------------------------------------------
-    const endpoint = "/api/services"; // I changed this to the most common default
-    
-    // Construct URL
+    const endpoint = "/api/services"; 
     const url = `${STRAPI_URL}${endpoint}?filters[slug][$eq]=${slug}&populate[servicePage][populate]=*`;
-    
-    console.log(`Trying to fetch Service Page: ${url}`); // Debug Log
+
+    console.log(`Trying to fetch Service Page: ${url}`);
 
     const res = await fetch(url, {
       next: { revalidate: 60 },
@@ -290,15 +353,47 @@ export async function getServicePageBySlug(slug: string): Promise<ServicePageDat
     }
 
     const json = await res.json();
-    
+
     if (json.data && json.data.length > 0) {
       return json.data[0];
     }
-    
+
     console.log("Strapi returned 200 OK, but the data array was empty. No page matches this slug.");
     return null;
   } catch (error) {
     console.error("Error fetching service page:", error);
+    return null;
+  }
+}
+
+// --- NEW FETCHER: Meet The Team Page ---
+
+export async function getMeetTheTeamData(): Promise<MeetTheTeamResponse | null> {
+  // Exact endpoint from your instructions
+  const endpoint = '/api/meet-the-team';
+  const query = 'populate[meetTheTeam][populate]=*';
+  
+  const url = `${STRAPI_URL}${endpoint}?${query}`;
+
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      next: { revalidate: 60 }, 
+    });
+
+    if (!res.ok) {
+      console.error(`Error fetching Meet the Team data: ${res.status} ${res.statusText}`);
+      return null;
+    }
+
+    const json = await res.json();
+    return json;
+    
+  } catch (error) {
+    console.error('Network error fetching Meet the Team data:', error);
     return null;
   }
 }

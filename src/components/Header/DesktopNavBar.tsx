@@ -58,10 +58,6 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = ({ navItems }) => {
           />
         );
       })}
-
-      <button className="px-4 py-2 font-semibold text-white bg-[#267b9a] rounded-md hover:bg-[#216a86] transition-colors">
-        Contact Us
-      </button>
     </nav>
   );
 };

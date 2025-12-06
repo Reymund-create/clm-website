@@ -51,10 +51,16 @@ const HeaderLayout: React.FC<HeaderLayoutProps> = ({ navItems, logoUrl, siteName
       </div>
 
       {/* Mobile Menu */}
-      {isMobileOpen && (
+      {/* {isMobileOpen && (
         <div className="xl:hidden border-t">
           <MobileNavbar navItems={navItems} /> 
         </div>
+      )} */}
+      {isMobileOpen && (
+        <MobileNavbar 
+          navItems={navItems} 
+          onClose={() => setIsMobileOpen(false)} // <--- You must add this!
+        />
       )}
     </header>
   );
