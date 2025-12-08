@@ -1,5 +1,5 @@
 import { getMeetTheTeamData } from "@/lib/api";
-import MeetTheTeamRenderer from "../../components/Renderer/MeetTheTeamRenderer";
+import MeetTheTeamRenderer from "../../components/Renderer/MeetTheTeamBlockRenderer";
 import { notFound } from "next/navigation";
 
 export const metadata = {

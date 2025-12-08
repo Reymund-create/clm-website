@@ -1,16 +1,53 @@
-export const metadata = {
-	title: "Technical SEO — Test Route",
-	description: "Test page to verify the /technical-seo route",
-};
+import React from "react";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { getTechnicalSeoPage } from "../../lib/api"; 
+import GlobalBlockRenderer from "../../components/Renderer/ConfluenceBlockRenderer";
 
-export default function TechnicalSeoPage() {
-	return (
-		<main style={{minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem'}}>
-			<div style={{textAlign: 'center'}}>
-				<h1 style={{fontSize: 'clamp(1.5rem, 3vw, 2.5rem)', margin: 0}}>Technical SEO Page — Route Working</h1>
-				<p style={{opacity: 0.85, marginTop: '0.75rem'}}>This is <code>src/app/technical-seo/page.tsx</code> — the route <code>/technical-seo</code> resolves.</p>
-			</div>
-		</main>
-	);
+// Force dynamic rendering to ensure fresh data from Strapi
+export const dynamic = "force-dynamic"; 
+
+export async function generateMetadata(): Promise<Metadata> {
+  const pageData = await getTechnicalSeoPage();
+
+  if (!pageData) return { title: "Page Not Found" };
+
+  const { metaTitle, metaDescription } = pageData;
+  
+  // Logic: Smart suffix handling for optimized title length
+  const longSuffix = " | Confluence Local Marketing";
+  const shortSuffix = " | CLM";
+  
+  const finalTitle = (metaTitle.length + longSuffix.length <= 60) 
+    ? `${metaTitle}${longSuffix}` 
+    : `${metaTitle}${shortSuffix}`;
+
+  return {
+    title: finalTitle,
+    description: metaDescription || "Technical SEO Services",
+    openGraph: {
+      title: finalTitle,
+      description: metaDescription,
+    },
+  };
 }
 
+export default async function TechnicalSeoPage() {
+  const pageData = await getTechnicalSeoPage();
+
+  if (!pageData) {
+    notFound();
+  }
+
+  const { technicalSEO } = pageData;
+
+  return (
+    <main>
+        {/* The GlobalBlockRenderer now accepts the technicalSEO blocks.
+          It will automatically group your `elements.feature-item` blocks 
+          into the 3-column grid you designed.
+        */}
+        <GlobalBlockRenderer blocks={technicalSEO} />
+    </main>
+  );
+}

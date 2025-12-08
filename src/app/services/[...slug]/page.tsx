@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getServicePageBySlug } from "../../../lib/api"; 
-import BlockRenderer from "../../../components/Renderer/BlockRenderer";
+import BlockRenderer from "../../../components/Renderer/ServiceBlockRenderer";
 
 // 1. Update Interface for Next.js 15 + Catch-all route
 interface PageProps {

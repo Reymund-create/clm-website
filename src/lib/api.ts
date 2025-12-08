@@ -36,7 +36,7 @@ interface StrapiNavItemRaw {
   parent: { id: number } | null;
 }
 
-// --- NEW INTERFACES (Service Pages / Dynamic Blocks) ---
+// --- SHARED / COMMON COMPONENT INTERFACES ---
 
 export interface ServiceRichTextChild {
   text: string;
@@ -90,6 +90,46 @@ export interface ComponentFaqItem {
   content: ServiceRichTextNode[];
 }
 
+// --- NEW: TECHNICAL SEO INTERFACES ---
+
+export interface IconData {
+  width: number;
+  height: number;
+  iconData: string; // SVG path string
+  iconName: string;
+  isSvgEditable: boolean;
+  isIconNameEditable: boolean;
+}
+
+export interface ComponentFeatureItem {
+  __component: "elements.feature-item";
+  id: number;
+  title: string;
+  description: string;
+  icon: IconData;
+}
+
+// Union type for the Technical SEO Dynamic Zone
+export type TechnicalSeoBlock =
+  | ComponentBackgroundImage
+  | ComponentHeading
+  | ComponentRichText
+  | ComponentFeatureItem
+  | ComponentFaqItem;
+
+export interface TechnicalSeoPageData {
+  id: number;
+  documentId: string;
+  metaTitle: string;
+  metaDescription: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  technicalSEO: TechnicalSeoBlock[];
+}
+
+// --- SERVICE PAGES INTERFACES ---
+
 export type ServicePageBlock =
   | ComponentHeading
   | ComponentRichText
@@ -106,7 +146,7 @@ export interface ServicePageData {
   servicePage: ServicePageBlock[];
 }
 
-// --- NEW INTERFACES (Landing Page / Hero) ---
+// --- LANDING PAGE / HERO INTERFACES ---
 
 export interface StrapiTextChild {
   text: string;
@@ -120,7 +160,7 @@ export interface StrapiTextBlock {
 }
 
 export interface StrapiButton {
-  __component?: "elements.button"; // Added optional discriminator for reuse
+  __component?: "elements.button";
   id: number;
   label: string;
   href: string;
@@ -144,9 +184,8 @@ export interface LandingPageData {
   button: StrapiButton[];
 }
 
-// --- NEW INTERFACES (Meet The Team) ---
+// --- MEET THE TEAM INTERFACES ---
 
-// Specific Image format for Team page (handles formats like small/medium/large)
 export interface StrapiImageFormat {
   ext: string;
   url: string;
@@ -173,9 +212,6 @@ export interface MeetTheTeamImage {
     thumbnail?: StrapiImageFormat;
   };
 }
-
-// Reuse ComponentHeading and ComponentRichText where possible, 
-// but define unique ones for unique structures like CardItem.
 
 export interface MeetTheTeamBackground {
   __component: "elements.background-image";
@@ -213,6 +249,23 @@ export interface MeetTheTeamResponse {
     metaDescription: string;
     meetTheTeam: MeetTheTeamBlock[];
   };
+}
+
+// --- CONFLUENCE AI PAGE INTERFACES ---
+
+export type ConfluenceBlock = 
+    MeetTheTeamBackground
+  | ComponentHeading
+  | ComponentRichText
+  | StrapiButton
+  | ComponentFaqItem;
+
+export interface ConfluencePageData {
+  id: number;
+  documentId: string;
+  metaTitle: string;
+  metaDescription: string;
+  confluencePage: ConfluenceBlock[];
 }
 
 // --- Logic (Navigation Tree) ---
@@ -366,10 +419,7 @@ export async function getServicePageBySlug(slug: string): Promise<ServicePageDat
   }
 }
 
-// --- NEW FETCHER: Meet The Team Page ---
-
 export async function getMeetTheTeamData(): Promise<MeetTheTeamResponse | null> {
-  // Exact endpoint from your instructions
   const endpoint = '/api/meet-the-team';
   const query = 'populate[meetTheTeam][populate]=*';
   
@@ -394,6 +444,58 @@ export async function getMeetTheTeamData(): Promise<MeetTheTeamResponse | null> 
     
   } catch (error) {
     console.error('Network error fetching Meet the Team data:', error);
+    return null;
+  }
+}
+
+export async function getConfluencePage(): Promise<ConfluencePageData | null> {
+  const endpoint = "/api/confluence-ai";
+  const query = "populate[confluencePage][populate]=*";
+  const url = `${STRAPI_URL}${endpoint}?${query}`;
+
+  try {
+    const res = await fetch(url, { 
+      next: { revalidate: 60 } 
+    });
+
+    if (!res.ok) {
+      console.error(`Error fetching Confluence page: ${res.status}`);
+      return null;
+    }
+
+    const json = await res.json();
+    return json.data || null;
+
+  } catch (error) {
+    console.error("Fetch Confluence page failed:", error);
+    return null;
+  }
+}
+
+// --- NEW FETCHER: Technical SEO Page ---
+
+export async function getTechnicalSeoPage(): Promise<TechnicalSeoPageData | null> {
+  const endpoint = "/api/technical-seo";
+  // Manual string construction as requested (no 'qs' lib)
+  const query = "populate[technicalSEO][populate]=*";
+  
+  const url = `${STRAPI_URL}${endpoint}?${query}`;
+
+  try {
+    const res = await fetch(url, { 
+      next: { revalidate: 60 } 
+    });
+
+    if (!res.ok) {
+      console.error(`Error fetching Technical SEO page: ${res.status}`);
+      return null;
+    }
+
+    const json = await res.json();
+    return json.data || null;
+
+  } catch (error) {
+    console.error("Fetch Technical SEO page failed:", error);
     return null;
   }
 }

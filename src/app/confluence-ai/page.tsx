@@ -1,16 +1,55 @@
-export const metadata = {
-	title: "Technical SEO — Test Route",
-	description: "Test page to verify the /technical-seo route",
-};
+import React from "react";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { getConfluencePage } from "../../lib/api";
+import GlobalBlockRenderer from "../../components/Renderer/ConfluenceBlockRenderer";
 
-export default function TechnicalSeoPage() {
-	return (
-		<main style={{minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem'}}>
-			<div style={{textAlign: 'center'}}>
-				<h1 style={{fontSize: 'clamp(1.5rem, 3vw, 2.5rem)', margin: 0}}>Confluence AI Page — Route Working</h1>
-				<p style={{opacity: 0.85, marginTop: '0.75rem'}}>This is <code>src/app/confluence-ai/page.tsx</code> — the route <code>/technical-seo</code> resolves.</p>
-			</div>
-		</main>
-	);
+// Force dynamic rendering to ensure fresh data from Strapi on every request
+export const dynamic = "force-dynamic"; 
+
+export async function generateMetadata(): Promise<Metadata> {
+  const pageData = await getConfluencePage();
+
+  if (!pageData) return { title: "Page Not Found" };
+
+  const { metaTitle, metaDescription } = pageData;
+  
+  // SEO Logic: Smart suffix handling for optimized title length
+  // If the title + long suffix is <= 60 chars, use full name. Otherwise use acronym.
+  const longSuffix = " | Confluence Local Marketing";
+  const shortSuffix = " | CLM";
+  
+  const finalTitle = (metaTitle.length + longSuffix.length <= 60) 
+    ? `${metaTitle}${longSuffix}` 
+    : `${metaTitle}${shortSuffix}`;
+
+  return {
+    title: finalTitle,
+    description: metaDescription || "Confluence AI Services",
+    openGraph: {
+      title: finalTitle,
+      description: metaDescription,
+    },
+  };
 }
 
+export default async function ConfluencePage() {
+  const pageData = await getConfluencePage();
+
+  if (!pageData) {
+    notFound();
+  }
+
+  const { confluencePage } = pageData;
+
+  return (
+    <main>
+        {/* GlobalBlockRenderer handles:
+          1. Extracting the Hero content (Heading/Text/Button) for the top banner.
+          2. Rendering the main content (Rich Text).
+          3. Grouping the FAQ items into an interactive Accordion.
+        */}
+        <GlobalBlockRenderer blocks={confluencePage} />
+    </main>
+  );
+}
