@@ -2,7 +2,7 @@ import React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getConfluencePage } from "../../lib/api";
-import GlobalBlockRenderer from "../../components/Renderer/ConfluenceBlockRenderer";
+import GlobalBlockRenderer from "../../components/Renderer/GlobalBlockRenderer";
 
 // Force dynamic rendering to ensure fresh data from Strapi on every request
 export const dynamic = "force-dynamic"; 

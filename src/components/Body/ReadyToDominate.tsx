@@ -23,7 +23,7 @@ const CTASection = () => {
           Ready to <span className="text-[#267b9a]">Dominate</span> Your Market?
         </h2>
         <p className="text-gray-400 text-lg mb-10">
-          Let's build an AI-powered SEO strategy that delivers real business growth.
+          Let`&apos;`s build an AI-powered SEO strategy that delivers real business growth.
         </p>
 
         <div className="flex justify-center gap-6 flex-wrap">

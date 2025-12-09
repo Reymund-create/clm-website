@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -13,7 +12,26 @@ import {
   ComponentBackgroundImage 
 } from "@/lib/api";
 
-// --- UPDATED INTERFACE FOR YOUR SPECIFIC DATA ---
+// --- 1. NEW TYPES TO REPLACE 'ANY' ---
+
+// Extended Text Node to handle formatting flags
+interface RichTextText extends ServiceRichTextChild {
+  bold?: boolean;
+  italic?: boolean;
+  code?: boolean;
+}
+
+// Extended Block Node to handle structural props
+interface RichTextBlock {
+  type: string;
+  children: (RichTextText | RichTextBlock)[];
+  level?: number;
+  format?: 'ordered' | 'unordered';
+  url?: string;
+}
+
+type RichNode = RichTextText | RichTextBlock;
+
 interface ComponentFeatureItem {
   __component: "elements.feature-item";
   id: number;
@@ -26,6 +44,31 @@ interface ComponentFeatureItem {
     iconName?: string;
   }; 
 }
+
+interface ComponentButton {
+  __component: "elements.button";
+  id?: number;
+  label: string;
+  href: string;
+  isExternal: boolean;
+}
+
+// The custom grid object created inside processBlocks
+interface CustomFeatureGrid {
+  __component: 'custom.feature-grid';
+  items: ComponentFeatureItem[];
+}
+
+// Union of all possible blocks passed to the renderer
+type AnyBlock = 
+  | ConfluenceBlock 
+  | ComponentBackgroundImage 
+  | ComponentFeatureItem
+  | ComponentButton;
+
+// Union of blocks used inside the main content loop
+type ContentBlock = AnyBlock | CustomFeatureGrid;
+
 
 // --- ANIMATION VARIANTS ---
 const fadeInUp: Variants = {
@@ -45,28 +88,31 @@ const staggerContainer: Variants = {
   }
 };
 
-// --- 1. SHARED RICH TEXT RENDERER ---
-const renderRichText = (nodes: (ServiceRichTextNode | ServiceRichTextChild)[], textColorClass: string = "text-gray-600") => {
+// --- 2. SHARED RICH TEXT RENDERER ---
+const renderRichText = (nodes: (ServiceRichTextNode | ServiceRichTextChild | RichNode)[], textColorClass: string = "text-gray-600") => {
   if (!nodes) return null;
 
   return nodes.map((node, index) => {
-    if (node.type === 'text') {
-      const textNode = node as ServiceRichTextChild;
-      const textNodeAny = textNode as any; 
+    // Cast to our local RichNode type to access optional props safely
+    const safeNode = node as RichNode;
+
+    if (safeNode.type === 'text') {
+      const textNode = safeNode as RichTextText;
       let content: React.ReactNode = textNode.text;
       
-      if (textNodeAny.bold) content = <strong key="bold" className="font-bold text-gray-900">{content}</strong>;
-      if (textNodeAny.italic) content = <em key="italic" className="italic">{content}</em>;
-      if (textNodeAny.code) content = <code key="code" className="bg-gray-100 text-pink-600 px-1.5 py-0.5 rounded text-sm font-mono border border-gray-200">{content}</code>;
+      if (textNode.bold) content = <strong key="bold" className="font-bold text-gray-900">{content}</strong>;
+      if (textNode.italic) content = <em key="italic" className="italic">{content}</em>;
+      if (textNode.code) content = <code key="code" className="bg-gray-100 text-pink-600 px-1.5 py-0.5 rounded text-sm font-mono border border-gray-200">{content}</code>;
       
       return <span key={index}>{content}</span>;
     }
 
-    const blockNode = node as any; 
+    // It's a block node
+    const blockNode = safeNode as RichTextBlock;
     
     switch (blockNode.type) {
       case 'paragraph':
-        if (blockNode.children.length === 0 || (blockNode.children.length === 1 && blockNode.children[0].text === "")) {
+        if (blockNode.children.length === 0 || (blockNode.children.length === 1 && (blockNode.children[0] as RichTextText).text === "")) {
              return <div key={index} className="h-4" />; 
         }
         return (
@@ -132,7 +178,7 @@ const renderRichText = (nodes: (ServiceRichTextNode | ServiceRichTextChild)[], t
   });
 };
 
-// --- 2. SUB-COMPONENTS ---
+// --- 3. SUB-COMPONENTS ---
 
 const FaqItem = ({ item }: { item: ComponentFaqItem }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -175,11 +221,11 @@ const FaqItem = ({ item }: { item: ComponentFaqItem }) => {
   );
 };
 
-// --- 3. HELPER: GROUP BLOCKS ---
+// --- 4. HELPER: GROUP BLOCKS ---
 
-const processBlocks = (blocks: any[]) => {
-  const heroBlocks: any[] = [];
-  const processedContent: any[] = [];
+const processBlocks = (blocks: AnyBlock[]) => {
+  const heroBlocks: AnyBlock[] = [];
+  const processedContent: ContentBlock[] = [];
   
   let foundHeroLimit = false;
   let buttonFound = false;
@@ -211,7 +257,8 @@ const processBlocks = (blocks: any[]) => {
     }
 
     if (block.__component === 'elements.feature-item') {
-      featureBuffer.push(block);
+      // We need to cast here because TS implies block is AnyBlock, but we know it matches FeatureItem
+      featureBuffer.push(block as ComponentFeatureItem);
     } else {
       flushFeatures();
       processedContent.push(block);
@@ -223,10 +270,10 @@ const processBlocks = (blocks: any[]) => {
 };
 
 
-// --- 4. MAIN RENDERER ---
+// --- 5. MAIN RENDERER ---
 
 interface RendererProps {
-  blocks: (ConfluenceBlock | ComponentBackgroundImage | ComponentFeatureItem)[];
+  blocks: AnyBlock[];
 }
 
 export default function ConfluenceBlockRenderer({ blocks }: RendererProps) {
@@ -237,11 +284,10 @@ export default function ConfluenceBlockRenderer({ blocks }: RendererProps) {
   
   const { heroBlocks, processedContent } = processBlocks(rawBlocks);
 
-  const heroHeading = heroBlocks.find(b => b.__component === 'elements.heading');
-  const heroText = heroBlocks.find(b => b.__component === 'elements.rich-text');
-  const heroButton = heroBlocks.find(b => b.__component === 'elements.button');
-
-  const isButton = (b: any): b is { label: string; href: string; isExternal: boolean } => b && b.label && b.href;
+  // Helper type guards or specific finds
+  const heroHeading = heroBlocks.find(b => b.__component === 'elements.heading') as { heading: string; __component: string } | undefined;
+  const heroText = heroBlocks.find(b => b.__component === 'elements.rich-text') as { richText: any[]; __component: string } | undefined;
+  const heroButton = heroBlocks.find(b => b.__component === 'elements.button') as ComponentButton | undefined;
 
   return (
     <div className="bg-white flex flex-col min-h-screen">
@@ -251,7 +297,7 @@ export default function ConfluenceBlockRenderer({ blocks }: RendererProps) {
         <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] bg-[#267b9a] rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-pulse pointer-events-none"></div>
         <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-purple-900 rounded-full mix-blend-screen filter blur-[120px] opacity-20 pointer-events-none"></div>
 
-        {heroImage && heroImage.__component === 'elements.background-image' && heroImage.background?.url && (
+        {heroImage && heroImage.background?.url && (
           <div className="absolute inset-0 w-full h-full z-0">
             <Image
               src={heroImage.background.url}
@@ -270,7 +316,7 @@ export default function ConfluenceBlockRenderer({ blocks }: RendererProps) {
            variants={fadeInUp}
            className="relative z-10 max-w-4xl mx-auto text-center py-20"
         >
-          {heroHeading && heroHeading.__component === 'elements.heading' && (
+          {heroHeading && (
             <>
               <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight tracking-tight drop-shadow-xl mb-8">
                 {heroHeading.heading}
@@ -279,13 +325,13 @@ export default function ConfluenceBlockRenderer({ blocks }: RendererProps) {
             </>
           )}
 
-          {heroText && heroText.__component === 'elements.rich-text' && (
+          {heroText && (
              <div className="prose prose-lg prose-invert max-w-none text-gray-100/90 leading-relaxed mb-10">
                {renderRichText(heroText.richText, "text-gray-100")}
              </div>
           )}
 
-          {heroButton && isButton(heroButton) && (
+          {heroButton && (
              <Link
                href={heroButton.href}
                target={heroButton.isExternal ? "_blank" : "_self"}
@@ -304,17 +350,14 @@ export default function ConfluenceBlockRenderer({ blocks }: RendererProps) {
 
           // --- GRID RENDERER FOR FEATURES ---
           if (block.__component === 'custom.feature-grid') {
-            const features = block.items as ComponentFeatureItem[];
+            const features = block.items;
             const isOddCount = features.length % 2 !== 0;
             const isFourItems = features.length === 4;
 
-            // Define grid columns based on item count
-            // If exactly 4 items, use 2 columns on large screens. Otherwise default to 3.
             const gridClasses = isFourItems 
                 ? "grid md:grid-cols-2 lg:grid-cols-2 gap-8" 
                 : "grid md:grid-cols-2 lg:grid-cols-3 gap-8";
             
-            // If exactly 4 items, we might want to constrain max-width slightly so cards aren't too wide
             const containerClasses = isFourItems
                 ? "max-w-5xl mx-auto px-6 mb-20 mt-10"
                 : "max-w-7xl mx-auto px-6 mb-20 mt-10";
@@ -332,7 +375,6 @@ export default function ConfluenceBlockRenderer({ blocks }: RendererProps) {
                     const isLast = fIndex === features.length - 1;
                     let spanClass = "";
                     
-                    // Logic for centering uneven items (only applies if NOT 4 items)
                     if (isOddCount && isLast) {
                         spanClass = "md:col-span-2 lg:col-span-1";
                     }
@@ -393,24 +435,27 @@ export default function ConfluenceBlockRenderer({ blocks }: RendererProps) {
 
           switch (block.__component) {
             case "elements.heading":
+              // We need to tell TS this block has a 'heading' property
+              const headingBlock = block as { heading: string };
               return (
                 <BlockWrapper key={key} className={`max-w-6xl mx-auto px-6 mt-16 mb-8 text-left`}>
                   <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
-                    {block.heading}
+                    {headingBlock.heading}
                   </h2>
                   <div className="w-12 h-1 bg-[#267b9a] mt-4 rounded-full"></div>
                 </BlockWrapper>
               );
 
             case "elements.rich-text":
+              const rtBlock = block as { richText: any[] };
               return (
                 <BlockWrapper key={key} className="max-w-6xl mx-auto px-6 prose prose-lg prose-headings:text-gray-900 prose-strong:text-gray-900">
-                  {renderRichText(block.richText, "text-gray-600")}
+                  {renderRichText(rtBlock.richText, "text-gray-600")}
                 </BlockWrapper>
               );
 
             case "elements.button":
-              const btn = block as any;
+              const btn = block as ComponentButton;
               return (
                 <BlockWrapper key={key} className="flex justify-start max-w-4xl mx-auto my-12 px-6">
                   <Link
@@ -433,7 +478,7 @@ export default function ConfluenceBlockRenderer({ blocks }: RendererProps) {
                         variants={fadeInUp}
                         className="max-w-6xl mx-auto px-6"
                     >
-                          <FaqItem item={block} />
+                          <FaqItem item={block as ComponentFaqItem} />
                     </motion.div>
                 );
 

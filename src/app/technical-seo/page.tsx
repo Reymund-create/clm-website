@@ -2,7 +2,7 @@ import React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTechnicalSeoPage } from "../../lib/api"; 
-import GlobalBlockRenderer from "../../components/Renderer/ConfluenceBlockRenderer";
+import GlobalBlockRenderer from "../../components/Renderer/GlobalBlockRenderer";
 
 // Force dynamic rendering to ensure fresh data from Strapi
 export const dynamic = "force-dynamic"; 

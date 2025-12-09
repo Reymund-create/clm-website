@@ -1,6 +1,6 @@
 import React from "react";
 // FIX: Added GlobalData to the import list to make the type visible
-import { getNavigation, getGlobalData, GlobalData } from "@/lib/api"; 
+import { getNavigation, getGlobalData} from "@/lib/api"; 
 import HeaderLayout from "./HeaderLayout";
 
 // This is an async Server Component

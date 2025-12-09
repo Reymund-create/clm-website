@@ -3,6 +3,8 @@
 import React from "react";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { FaFacebook, FaLinkedin, FaYoutube } from "react-icons/fa6";
+import Link from "next/link";
+import Image from "next/image";
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -43,16 +45,16 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
           {/* Column 1: Contact & Social */}
           <div className="space-y-6">
-            <a href="/" className="inline-block">
+            <Link href="/" className="inline-block">
                 {/* Ensure your logo is in the /public folder */}
-                <img 
+                <Image 
                     src="/ConfluenceLogo.webp" 
                     alt="Confluence Marketing Logo"
                     width={200}
                     height={50}
                     className="h-auto"
                 />
-            </a>
+            </Link>
             <p className="text-sm">
                 Mon-Fri: 9:00 AM – 5:00 PM <br/>
                 Sat-Sun: Closed

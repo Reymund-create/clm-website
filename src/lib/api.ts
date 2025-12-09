@@ -1,5 +1,3 @@
-import { notFound } from "next/navigation";
-
 const STRAPI_URL = "https://ancient-crown-9dfaf5bb18.strapiapp.com";
 
 // --- Existing Interfaces (Global & Nav) ---
@@ -366,6 +364,7 @@ export async function getGlobalData(): Promise<GlobalData | null> {
     const json = await res.json();
     return json.data || null;
   } catch (error) {
+    console.error("Error fetching global data:", error);
     return null;
   }
 }

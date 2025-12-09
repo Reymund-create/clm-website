@@ -5,6 +5,7 @@ import Link from "next/link"; // <--- Import Link
 import DesktopNavbar from "./DesktopNavBar";
 import MobileNavbar from "./MobileNavBar";
 import { NavigationItem } from "@/lib/api";
+import Image from "next/image";
 
 const STRAPI_BASE_URL = "https://ancient-crown-9dfaf5bb18.strapiapp.com";
 
@@ -27,7 +28,9 @@ const HeaderLayout: React.FC<HeaderLayoutProps> = ({ navItems, logoUrl, siteName
         
         {/* Logo Section - Wrapped in Link to Root */}
         <Link href="/" className="flex items-center space-x-2">
-          <img
+          <Image
+            width={282}
+            height={64}
             src={fullLogoUrl}
             alt={siteName || "Confluence Logo"}
             className="h-16 w-auto object-contain cursor-pointer" // Added cursor-pointer
