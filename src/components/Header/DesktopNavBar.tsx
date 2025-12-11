@@ -1,48 +1,63 @@
 "use client";
 
 import React from "react";
+import { usePathname } from "next/navigation"; // <--- Import this
 import NavItem from "./NavItem";
-import DropdownMenu from "./DropdownMenu";
+import DropdownMenu, { DropdownItem } from "./DropdownMenu";
+import { NavigationItem } from "@/lib/api";
 
-const DesktopNavbar: React.FC = () => {
-  const navItems = [
-    { label: "Home", href: "/", active: true },
-    {
-      label: "Technical SEO",
-      href: "/technical-seo",
-    },
-    {
-      label: "Services",
-      dropdown: [
-        { label: "Local SEO", href: "/services/local-seo" },
-        { label: "Content Marketing", href: "/services/content-marketing" },
-      ],
-    },
-    {
-      label: "Meet the Team",
-      dropdown: [
-        { label: "Leadership", href: "/team/leadership" },
-        { label: "Experts", href: "/team/experts" },
-      ],
-    },
-    {
-      label: "Confluence AI",
-      href: "/confluence-ai",
-    },
-  ];
+interface DesktopNavbarProps {
+  navItems: NavigationItem[];
+}
+
+// Helper: Check if a parent contains the active path (to highlight parent when child is active)
+const isChildActive = (items: NavigationItem[], currentPath: string): boolean => {
+  return items.some(item => {
+    if (item.path === currentPath) return true;
+    if (item.items && item.items.length > 0) {
+      return isChildActive(item.items, currentPath);
+    }
+    return false;
+  });
+};
+
+const mapToDropdownItems = (items: NavigationItem[]): DropdownItem[] => {
+  return items.map((item) => ({
+    label: item.title,
+    href: item.path,
+    items: item.items && item.items.length > 0 ? mapToDropdownItems(item.items) : undefined,
+  }));
+};
+
+const DesktopNavbar: React.FC<DesktopNavbarProps> = ({ navItems }) => {
+  const pathname = usePathname(); // <--- Get current URL
 
   return (
     <nav className="flex items-center space-x-8">
-      {navItems.map((item) =>
-        item.dropdown ? (
-          <DropdownMenu key={item.label} label={item.label} items={item.dropdown} />
+      {navItems.map((item) => {
+        const hasDropdown = item.items && item.items.length > 0;
+        
+        // Logic: Item is active if path matches OR if one of its children is active
+        const isActive = 
+          item.path === pathname || 
+          (hasDropdown && isChildActive(item.items, pathname));
+
+        return hasDropdown ? (
+          <DropdownMenu
+            key={item.id}
+            label={item.title}
+            items={mapToDropdownItems(item.items)}
+            isActive={isActive} // Pass the calculated active state
+          />
         ) : (
-          <NavItem key={item.label} label={item.label} href={item.href} isActive={item.active} />
-        ) 
-      )}
-      <button className="px-4 py-2 font-semibold text-white bg-[#267b9a] rounded-md hover:bg-[#216a86]">
-        Contact Us
-      </button>
+          <NavItem
+            key={item.id}
+            label={item.title}
+            href={item.path}
+            isActive={isActive} // Pass the calculated active state
+          />
+        );
+      })}
     </nav>
   );
 };

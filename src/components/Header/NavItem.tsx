@@ -9,7 +9,7 @@ interface NavItemProps {
   isActive?: boolean;
   hasDropdown?: boolean;
   onClick?: () => void;
-  children?: React.ReactNode; // for dropdown wrapper
+  children?: React.ReactNode;
 }
 
 const NavItem: React.FC<NavItemProps> = ({
@@ -27,24 +27,26 @@ const NavItem: React.FC<NavItemProps> = ({
     ? "text-[#2b7c91] border-b-2 border-[#2b7c91]"
     : "text-gray-700 hover:text-[#2b7c91]";
 
+  // SCENARIO 1: It has a dropdown (Parent Item)
+  // We render a <button> or <div> so it is NOT clickable as a link.
   if (hasDropdown) {
-    // Dropdown trigger button
     return (
       <div className="relative group">
         <button
+          type="button"
           onClick={onClick}
-          className={`${baseClasses} ${activeClasses}`}
+          className={`${baseClasses} ${activeClasses} cursor-default`} // cursor-default implies no action
           aria-haspopup="true"
           aria-expanded={children ? true : false}
         >
           {label}
-          {children}
+          {children} {/* Chevron Icon */}
         </button>
       </div>
     );
   }
 
-  // Normal nav item
+  // SCENARIO 2: Regular Link (Child Item or Root without children)
   return (
     <Link href={href || "#"} className={`${baseClasses} ${activeClasses}`}>
       {label}

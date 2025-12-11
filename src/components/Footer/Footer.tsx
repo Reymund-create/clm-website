@@ -3,21 +3,16 @@
 import React from "react";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { FaFacebook, FaLinkedin, FaYoutube } from "react-icons/fa6";
+import Link from "next/link";
+import Image from "next/image";
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
-  const servicesLinks = [
-    { name: "Local SEO", href: "#" },
-    { name: "Technical SEO", href: "#" },
-    { name: "YouTube SEO", href: "#" },
-    { name: "Content Marketing", href: "#" },
-  ];
-
   const usefulLinks = [
-    { name: "Meet the Team", href: "/team" },
-    { name: "Contact Us", href: "/contact" },
-    { name: "Reviews", href: "/reviews" },
+    { name: "Meet the Team", href: "/meet-the-team" },
+    { name: "Technical SEO", href: "/technical-seo" },
+    { name: "Confluence AI", href: "/confluence-ai" },
   ];
   
   const socialLinks = [
@@ -50,16 +45,16 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
           {/* Column 1: Contact & Social */}
           <div className="space-y-6">
-            <a href="/" className="inline-block">
+            <Link href="/" className="inline-block">
                 {/* Ensure your logo is in the /public folder */}
-                <img 
+                <Image 
                     src="/ConfluenceLogo.webp" 
                     alt="Confluence Marketing Logo"
                     width={200}
                     height={50}
                     className="h-auto"
                 />
-            </a>
+            </Link>
             <p className="text-sm">
                 Mon-Fri: 9:00 AM – 5:00 PM <br/>
                 Sat-Sun: Closed
@@ -69,9 +64,12 @@ const Footer: React.FC = () => {
             </p>
             <a href="tel:6304478434" className="text-sm hover:text-white">630-447-8434</a>
 
-            <div className="mt-4 space-y-2">
+
+          </div>
+        
+            <div>
               <h3 className="text-lg font-semibold text-white">Social Links</h3>
-              <div className="flex space-x-4">
+              <div className="flex space-x-4 space-y-2 mt-6">
                   {socialLinks.map((social) => (
                     <a key={social.name} href={social.href} className="hover:text-white">
                       <span className="sr-only">{social.name}</span>
@@ -80,9 +78,7 @@ const Footer: React.FC = () => {
                   ))}
               </div>
             </div>
-          </div>
-
-          {/* Column 2: Services */}
+          {/* Column 2: Services
           <div>
             <h3 className="text-lg font-semibold text-white">Services</h3>
             <ul className="mt-6 space-y-4 text-sm">
@@ -94,7 +90,7 @@ const Footer: React.FC = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </div> */}
 
           {/* Column 3: Useful Links */}
           <div>
