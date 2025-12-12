@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
+import Script from "next/script";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -25,11 +26,28 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      
+       <head>
+        {/* LightSite AI Discovery Integration */}
+        <link
+          rel="sitemap"
+          type="application/xml"
+          title="AI Sitemap"
+          href="/ai-sitemap.xml"
+        />
+      </head>
+
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Header />
         {children}
         <Footer />
+         {/* LightSite Script */}
+        <Script
+          src="https://cdn.lightsite.ai/v2.3.0/llm-delivery.js"
+          strategy="afterInteractive"
+          defer
+          data-apikey="lsai_c5756cc5f6684e33a35d52402d58fa68"
+          data-direct-supabase="true"
+        />
       </body>
       
     </html>
