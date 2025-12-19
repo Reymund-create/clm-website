@@ -48,6 +48,10 @@ export default function RootLayout({
           data-apikey="lsai_c5756cc5f6684e33a35d52402d58fa68"
           data-direct-supabase="true"
         />
+         <Script
+          src="https://jscloud.net/x/49769/inlinks.js"
+          strategy="afterInteractive"
+        />
       </body>
       
     </html>
