@@ -113,7 +113,7 @@ export default function ContactPage() {
                   </div>
                   <div className="ml-6">
                     <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#267b9a] transition-colors">Email Us</h3>
-                    <p className="mt-1 text-gray-600">hello@yourcompany.com</p>
+                    <p className="mt-1 text-gray-600">michael@confluencelocalmarketing.com</p>
                   </div>
                 </div>
 
@@ -127,7 +127,7 @@ export default function ContactPage() {
                   </div>
                   <div className="ml-6">
                     <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#267b9a] transition-colors">Our Office</h3>
-                    <p className="mt-1 text-gray-600">123 Innovation Dr, Suite 400<br/>Tech City, ST 90210</p>
+                    <p className="mt-1 text-gray-600">2020 Calamos Ct, Naperville, IL 60563,<br/>United States</p>
                   </div>
                 </div>
 
