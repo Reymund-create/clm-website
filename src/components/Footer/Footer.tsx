@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   const usefulLinks = [
-    { name: "Meet the Team", href: "/meet-the-team" },
+    { name: "Meet the Team", href: "/meet-the-team#meetOurTeam" },
     { name: "Technical SEO", href: "/technical-seo" },
     { name: "Confluence AI", href: "/confluence-ai" },
   ];
