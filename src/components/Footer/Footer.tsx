@@ -18,22 +18,22 @@ const Footer: React.FC = () => {
   const socialLinks = [
     {
       name: "Facebook",
-      href: "#",
+      href: "https://www.facebook.com/Confluencelocalmarketing/",
       icon: <FaFacebook className="w-6 h-6" />
     },
     {
       name: "YouTube",
-      href: "#",
+      href: "https://www.youtube.com/c/Confluencelocalmarketing",
       icon: <FaYoutube className="w-6 h-6" />
     },
     {
         name: "LinkedIn",
-        href: "#",
+        href: "https://www.linkedin.com/company/confluence-local-marketing",
         icon: <FaLinkedin className="w-6 h-6" />
     }, 
     {
         name: "Maps",
-        href: "#",
+        href: "https://www.google.com/maps/dir/Confluence+Local+Marketing,+2020+Calamos+Ct,+Naperville,+IL+60563/2020+Calamos+Ct,+Naperville,+IL+60563/@40.4848495,-86.976014,8z/data=!3m2!4b1!5s0x880ef8e74bdfc8e7:0xd5c6e936527cf4a2!4m13!4m12!1m5!1m1!1s0x880e57eff5fc1b93:0x67296514c59f316d!2m2!1d-88.2019069!2d41.8052949!1m5!1m1!1s0x880e57eff5fc1b93:0x67296514c59f316d!2m2!1d-88.2019069!2d41.8052949?hl=en&authuser=0&entry=ttu&g_ep=EgoyMDI2MDExMy4wIKXMDSoASAFQAw%3D%3D",
         icon: <FaMapMarkedAlt className="w-6 h-6" />
            
     }
