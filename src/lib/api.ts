@@ -34,7 +34,6 @@ interface StrapiNavItemRaw {
   parent: { id: number } | null;
 }
 
-// --- SHARED / COMMON COMPONENT INTERFACES ---
 
 export interface ServiceRichTextChild {
   text: string;
@@ -251,8 +250,8 @@ export interface MeetTheTeamResponse {
 
 // --- CONFLUENCE AI PAGE INTERFACES ---
 
-export type ConfluenceBlock = 
-    MeetTheTeamBackground
+export type ConfluenceBlock =
+  MeetTheTeamBackground
   | ComponentHeading
   | ComponentRichText
   | StrapiButton
@@ -264,6 +263,31 @@ export interface ConfluencePageData {
   metaTitle: string;
   metaDescription: string;
   confluencePage: ConfluenceBlock[];
+}
+export type PromptGraphBlock =
+  MeetTheTeamBackground
+  | ComponentHeading
+  | ComponentRichText
+  | StrapiButton
+  | ComponentFaqItem
+  | ComponentImage;
+
+export interface PromptGraphPageData {
+  id: number;
+  documentId: string;
+  metaTitle: string;
+  metaDescription: string;
+  promptGraphPage: PromptGraphBlock[];
+}
+export interface ComponentImage {
+  __component: "elements.image";
+  id: number;
+  singleImage: {
+    url: string;
+    alternativeText?: string | null;
+    width: number;
+    height: number;
+  };
 }
 
 // --- Logic (Navigation Tree) ---
@@ -390,7 +414,7 @@ export async function getLandingPageData(): Promise<LandingPageData | null> {
 
 export async function getServicePageBySlug(slug: string): Promise<ServicePageData | null> {
   try {
-    const endpoint = "/api/services"; 
+    const endpoint = "/api/services";
     const url = `${STRAPI_URL}${endpoint}?filters[slug][$eq]=${slug}&populate[servicePage][populate]=*`;
 
     console.log(`Trying to fetch Service Page: ${url}`);
@@ -421,7 +445,7 @@ export async function getServicePageBySlug(slug: string): Promise<ServicePageDat
 export async function getMeetTheTeamData(): Promise<MeetTheTeamResponse | null> {
   const endpoint = '/api/meet-the-team';
   const query = 'populate[meetTheTeam][populate]=*';
-  
+
   const url = `${STRAPI_URL}${endpoint}?${query}`;
 
   try {
@@ -430,7 +454,7 @@ export async function getMeetTheTeamData(): Promise<MeetTheTeamResponse | null> 
       headers: {
         'Content-Type': 'application/json',
       },
-      next: { revalidate: 60 }, 
+      next: { revalidate: 60 },
     });
 
     if (!res.ok) {
@@ -440,7 +464,7 @@ export async function getMeetTheTeamData(): Promise<MeetTheTeamResponse | null> 
 
     const json = await res.json();
     return json;
-    
+
   } catch (error) {
     console.error('Network error fetching Meet the Team data:', error);
     return null;
@@ -453,8 +477,8 @@ export async function getConfluencePage(): Promise<ConfluencePageData | null> {
   const url = `${STRAPI_URL}${endpoint}?${query}`;
 
   try {
-    const res = await fetch(url, { 
-      next: { revalidate: 60 } 
+    const res = await fetch(url, {
+      next: { revalidate: 60 }
     });
 
     if (!res.ok) {
@@ -470,6 +494,29 @@ export async function getConfluencePage(): Promise<ConfluencePageData | null> {
     return null;
   }
 }
+export async function getPromptGraphPage(): Promise<PromptGraphPageData | null> {
+  const endpoint = "/api/prompt-graph-ai";
+  const query = "populate[promptGraphPage][populate]=*";
+  const url = `${STRAPI_URL}${endpoint}?${query}`;
+
+  try {
+    const res = await fetch(url, {
+      next: { revalidate: 60 }
+    });
+
+    if (!res.ok) {
+      console.error(`Error fetching promptgraph page: ${res.status}`);
+      return null;
+    }
+
+    const json = await res.json();
+    return json.data || null;
+
+  } catch (error) {
+    console.error("Fetch promptgraph page failed:", error);
+    return null;
+  }
+}
 
 // --- NEW FETCHER: Technical SEO Page ---
 
@@ -477,12 +524,12 @@ export async function getTechnicalSeoPage(): Promise<TechnicalSeoPageData | null
   const endpoint = "/api/technical-seo";
   // Manual string construction as requested (no 'qs' lib)
   const query = "populate[technicalSEO][populate]=*";
-  
+
   const url = `${STRAPI_URL}${endpoint}?${query}`;
 
   try {
-    const res = await fetch(url, { 
-      next: { revalidate: 60 } 
+    const res = await fetch(url, {
+      next: { revalidate: 60 }
     });
 
     if (!res.ok) {
