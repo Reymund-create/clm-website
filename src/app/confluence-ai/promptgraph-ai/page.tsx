@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getPromptGraphPage } from "../../../lib/api";
 import GlobalBlockRenderer from "../../../components/Renderer/GlobalBlockRenderer";
+import PromptGraphCTA from "../../../components/sections/PromptGraphCTA";
+
 
 // Force dynamic rendering to ensure fresh data from Strapi on every request
 export const dynamic = "force-dynamic";
@@ -44,12 +46,11 @@ export default async function PromptGraphPage() {
 
   return (
     <main>
-      {/* GlobalBlockRenderer handles:
-          1. Extracting the Hero content (Heading/Text/Button) for the top banner.
-          2. Rendering the main content (Rich Text).
-          3. Grouping the FAQ items into an interactive Accordion.
-        */}
+      {/* Top + main CMS-driven content */}
       <GlobalBlockRenderer blocks={promptGraphPage} />
+
+      {/* Bottom CTA Section (Static / Hybrid) */}
+      <PromptGraphCTA />
     </main>
   );
 }
