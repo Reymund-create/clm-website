@@ -1,9 +1,9 @@
 import React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getPromptGraphPage } from "../../../lib/api";
-import GlobalBlockRenderer from "../../../components/Renderer/GlobalBlockRenderer";
-import PromptGraphCTA from "../../../components/sections/PromptGraphCTA";
+import { getPromptGraphPage } from "../../lib/api";
+import GlobalBlockRenderer from "../../components/Renderer/GlobalBlockRenderer";
+import PromptGraphCTA from "../../components/sections/PromptGraphCTA";
 
 
 // Force dynamic rendering to ensure fresh data from Strapi on every request
