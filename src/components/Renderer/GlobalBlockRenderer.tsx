@@ -274,13 +274,14 @@ const FaqItem = ({ item }: { item: ComponentFaqItem }) => {
 };
 
 // --- 4. HELPER: GROUP BLOCKS ---
-
 const processBlocks = (blocks: AnyBlock[]) => {
   const heroBlocks: AnyBlock[] = [];
   const processedContent: ContentBlock[] = [];
 
-  let foundHeroLimit = false;
-  let buttonFound = false;
+  let heroHeadingTaken = false;
+  let heroTextTaken = false;
+  let heroButtonTaken = false;
+
   let featureBuffer: ComponentFeatureItem[] = [];
   let cardV2Buffer: ComponentCardV2[] = [];
 
@@ -297,48 +298,60 @@ const processBlocks = (blocks: AnyBlock[]) => {
   const flushFeatures = () => {
     if (featureBuffer.length > 0) {
       processedContent.push({
-        __component: 'custom.feature-grid',
-        items: [...featureBuffer]
+        __component: "custom.feature-grid",
+        items: [...featureBuffer],
       });
       featureBuffer = [];
     }
   };
 
   blocks.forEach((block) => {
-    if (!foundHeroLimit) {
-      if (block.__component === 'elements.heading' || block.__component === 'elements.rich-text') {
-        heroBlocks.push(block);
-        return;
-      } else if (block.__component === 'elements.button' && !buttonFound) {
-        heroBlocks.push(block);
-        buttonFound = true;
-        foundHeroLimit = true;
-        return;
-      } else {
-        foundHeroLimit = true;
-      }
+    // ---------------------------
+    // HERO EXTRACTION (STRICT)
+    // ---------------------------
+    if (block.__component === "elements.heading" && !heroHeadingTaken) {
+      heroBlocks.push(block);
+      heroHeadingTaken = true;
+      return;
     }
 
-    if (block.__component === 'elements.feature-item') {
+    if (block.__component === "elements.rich-text" && !heroTextTaken) {
+      heroBlocks.push(block);
+      heroTextTaken = true;
+      return;
+    }
+
+    if (block.__component === "elements.button" && !heroButtonTaken) {
+      heroBlocks.push(block);
+      heroButtonTaken = true;
+      return;
+    }
+
+    // ---------------------------
+    // FEATURE GRID GROUPING
+    // ---------------------------
+    if (block.__component === "elements.feature-item") {
       featureBuffer.push(block as ComponentFeatureItem);
       return;
     }
 
-    if (block.__component === 'elements.card-v2') {
+    if (block.__component === "elements.card-v2") {
       cardV2Buffer.push(block as ComponentCardV2);
       return;
     }
 
+    // ---------------------------
+    // FLUSH + NORMAL CONTENT
+    // ---------------------------
     flushFeatures();
     flushCardV2();
     processedContent.push(block);
-
   });
 
   flushFeatures();
   flushCardV2();
-  return { heroBlocks, processedContent };
 
+  return { heroBlocks, processedContent };
 };
 
 
