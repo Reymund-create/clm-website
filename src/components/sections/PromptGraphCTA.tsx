@@ -70,7 +70,7 @@ export default function Hero() {
                         href="https://www.promptgraph.ai/"
                         icon={<Globe />}
                         label="Visit Website"
-                        title="PromptGraph.AI"
+                        title="Confluence AI"
                         external
                     />
 
