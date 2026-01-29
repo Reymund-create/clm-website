@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaPlus, FaMinus } from "react-icons/fa";
+import { FaChevronDown } from "react-icons/fa";
 
 const faqs = [
   {
@@ -10,11 +10,11 @@ const faqs = [
     a: "AI-First SEO (AIO) uses artificial intelligence, schema optimization, and generative content to improve rankings across both search engines and AI Overviews like Google’s AI Search Experience.",
   },
   {
-    q: "How does Confluence Local Marketing use AI responsibly?",
+    q: "How does Confluence Local Marketing use AI?",
     a: "Every AI tool we deploy is guided by human oversight to ensure accuracy, authenticity, and compliance with Google quality standards.",
   },
   {
-    q: "Can AI SEO help my business rank higher in local maps and “near me” searches?",
+    q: "Can AI SEO help my business rank higher in maps?",
     a: "Yes. Our AI-powered local SEO focuses on NAP consistency, Maps optimization, and structured data to improve visibility across Google and voice-based assistants.",
   },
   {
@@ -22,89 +22,88 @@ const faqs = [
     a: "Traditional SEO optimizes for search engines. AIO optimizes for both search engines and AI discovery models that power AI Overviews and generative results.",
   },
   {
-    q: "Do you offer review management and removal?",
+    q: "Do you offer review management?",
     a: "Yes. We provide GBP reputation management, review monitoring, and removal of fake or policy-violating feedback.",
   },
   {
-    q: "What is programmatic SEO and why is it important?",
+    q: "What is programmatic SEO?",
     a: "Programmatic SEO uses automation to create optimized pages and schema at scale — perfect for businesses with multiple services or locations.",
-  },
-  {
-    q: "Can you manage my website and social media too?",
-    a: "Absolutely. We offer website design, content development, and AI-driven social media marketing for full brand consistency.",
   },
 ];
 
 export default function FAQSection() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-  const toggleFAQ = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section className="relative bg-white text-[#0b1a1f] py-24 px-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Frequently Asked <span className="text-[#267b9a]">Questions</span>
+    <section className="relative bg-zinc-50 pt-24 pb-32 lg:pb-48 overflow-hidden">
+
+      {/* Soft Background Accents */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-[#267b9a]/5 blur-[120px] rounded-full pointer-events-none" />
+
+      <div className="relative z-10 max-w-5xl mx-auto px-6">
+
+        {/* Heading Section */}
+        <div className="text-center mb-20">
+          <h2 className="text-5xl md:text-6xl font-bold text-zinc-900 tracking-tighter mb-6">
+            Everything You <span className="text-[#267b9a] italic font-light">Need to Know.</span>
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-zinc-500 text-lg max-w-2xl mx-auto">
             Everything you need to know about AI SEO (AIO) and how we use it to grow your business.
           </p>
-        </motion.div>
+        </div>
 
         {/* FAQ List */}
         <div className="space-y-4">
-          {faqs.map((item, index) => (
-            <motion.div
-              key={index}
-              layout
-              transition={{
-                layout: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] },
-              }}
-              className="border border-gray-200 rounded-xl overflow-hidden shadow-sm"
-            >
-              <button
-                onClick={() => toggleFAQ(index)}
-                className="w-full flex justify-between items-center px-6 py-5 text-left bg-white hover:bg-gray-50 transition-colors"
+          {faqs.map((item, index) => {
+            const isOpen = openIndex === index;
+            return (
+              <motion.div
+                key={index}
+                initial={false}
+                className={`group border transition-all duration-500 rounded-[2rem] overflow-hidden ${isOpen
+                    ? "bg-white border-[#267b9a]/30 shadow-xl shadow-zinc-200"
+                    : "bg-white/50 border-zinc-200 hover:border-zinc-300 hover:bg-white"
+                  }`}
               >
-                <span className="font-semibold text-lg">{item.q}</span>
-                <motion.div
-                  animate={{ rotate: openIndex === index ? 180 : 0 }}
-                  transition={{ duration: 0.3 }}
+                <button
+                  onClick={() => setOpenIndex(isOpen ? null : index)}
+                  className="w-full flex justify-between items-center px-8 py-7 text-left outline-none"
                 >
-                  {openIndex === index ? (
-                    <FaMinus className="text-[#267b9a]" />
-                  ) : (
-                    <FaPlus className="text-[#267b9a]" />
-                  )}
-                </motion.div>
-              </button>
+                  <span className={`text-lg md:text-xl font-bold tracking-tight transition-colors duration-300 ${isOpen ? "text-[#267b9a]" : "text-zinc-700 group-hover:text-zinc-900"
+                    }`}>
+                    {item.q}
+                  </span>
 
-              <AnimatePresence>
-                {openIndex === index && (
-                  <motion.div
-                    key="content"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="px-6 pb-5 text-gray-700 bg-[#f9f9f9]"
-                  >
-                    {item.a}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          ))}
+                  <div className={`flex-shrink-0 ml-4 w-8 h-8 rounded-full border flex items-center justify-center transition-all duration-500 ${isOpen
+                      ? "bg-[#267b9a] border-[#267b9a] text-white rotate-180"
+                      : "border-zinc-200 text-zinc-400 rotate-0"
+                    }`}>
+                    <FaChevronDown size={12} />
+                  </div>
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
+                    >
+                      <div className="px-8 pb-8">
+                        <div className="h-[1px] w-full bg-gradient-to-r from-zinc-100 to-transparent mb-6" />
+                        <p className="text-zinc-600 text-base md:text-lg leading-relaxed max-w-3xl">
+                          {item.a}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
         </div>
+
       </div>
     </section>
   );

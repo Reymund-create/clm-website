@@ -5,42 +5,49 @@ import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 import { FaRobot, FaMapMarkerAlt, FaBolt, FaStar } from "react-icons/fa";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 const features = [
   {
-    icon: <FaRobot className="text-[#267b9a] text-3xl" />,
+    icon: <FaRobot />,
     title: "AI-First SEO",
-    description:
-      "Optimize for both traditional search engines and AI-powered platforms like Google AI Overview and voice search.",
+    description: "Optimize for both traditional search and AI-powered platforms like Google AI Overviews."
   },
   {
-    icon: <FaMapMarkerAlt className="text-[#267b9a] text-3xl" />,
+    icon: <FaMapMarkerAlt />,
     title: "Local Dominance",
-    description:
-      "Own your local market with optimized Google Maps, accurate listings, and powerful 'near me' strategies.",
+    description: "Own your local market with optimized Google Maps and powerful 'near me' strategies."
   },
   {
-    icon: <FaBolt className="text-[#267b9a] text-3xl" />,
+    icon: <FaBolt />,
     title: "Programmatic Scale",
-    description:
-      "Automate content creation and optimization across thousands of keywords and locations without losing quality.",
+    description: "Automate content across thousands of keywords without losing human-level quality."
   },
   {
-    icon: <FaStar className="text-[#267b9a] text-3xl" />,
+    icon: <FaStar />,
     title: "Reputation Control",
-    description:
-      "Manage reviews, build trust, and amplify user-generated content to strengthen your online presence.",
+    description: "Manage reviews and amplify user-generated content to build iron-clad online trust."
   },
 ];
 
 const FeaturesCarousel: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const { scrollYProgress } = useScroll();
+  
+  // Parallax effect for the background glow
+  const y = useTransform(scrollYProgress, [0, 1], [-100, 100]);
+
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
+    initial: 0,
     loop: true,
-    slides: { perView: 3, spacing: 24 },
+    slides: { 
+      perView: 3, 
+      spacing: 24,
+      origin: "center" // Keeps the focus balanced
+    },
     breakpoints: {
-      "(max-width: 1024px)": { slides: { perView: 2, spacing: 16 } },
-      "(max-width: 640px)": { slides: { perView: 1, spacing: 12 } },
+      "(max-width: 1100px)": { slides: { perView: 2, spacing: 20 } },
+      "(max-width: 768px)": { slides: { perView: 1, spacing: 16 } },
     },
     slideChanged(slider) {
       setCurrentSlide(slider.track.details.rel);
@@ -48,68 +55,75 @@ const FeaturesCarousel: React.FC = () => {
   });
 
   return (
-    <section className="relative bg-white py-24 overflow-hidden">
-      {/* Optional subtle grid background */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,#f3f3f3_1px,transparent_0)] bg-[length:24px_24px] opacity-60" />
+    <section className="relative bg-black py-12 overflow-hidden -mt-1">
+      {/* THE PARALLAX BLUR - Anchored to the top to meet the Hero */}
+      <motion.div 
+        style={{ y }}
+        className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-full max-w-[1000px] h-[600px] bg-[#267b9a]/20 blur-[140px] rounded-full z-0 pointer-events-none"
+      />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
-        {/* Heading */}
-        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-          What We Do <span className="text-[#267b9a]">Differently</span>
-        </h2>
-        <p className="text-gray-600 max-w-3xl mx-auto mb-14">
-          We combine AI automation with human expertise to deliver SEO that
-          works in today’s search landscape — from Google to AI Overviews.
-        </p>
+      <div className="relative z-10 max-w-7xl mx-auto px-6">
+        {/* Header Section */}
+        <div className="text-center mb-20">
 
-        {/* Carousel */}
+          <h2 className="text-4xl md:text-6xl font-bold text-white mt-4 tracking-tight">
+            What We Do <span className="bg-gradient-to-r from-[#267b9a] to-[#40a9cf] bg-clip-text text-transparent italic">Differently.</span>
+          </h2>
+          <p className="mt-8 text-normalleading-relaxed text-zinc-400 md:text-xl">We combine AI automation with human expertise to deliver SEO that works in today’s search landscape, from Google to AI Overviews.</p>
+        </div>
+
+        {/* Carousel Wrapper */}
         <div className="relative">
           <div ref={sliderRef} className="keen-slider">
             {features.map((feature, i) => (
-              <div
-                key={i}
-                className="keen-slider__slide flex flex-col justify-between bg-white border border-gray-200 rounded-2xl p-8 text-left hover:border-[#267b9a] transition-all duration-300 hover:shadow-[0_0_25px_rgba(38,123,154,0.15)] h-full"
-              >
-                <div className="flex items-center justify-center mb-4">
-                  <div className="w-12 h-12 flex items-center justify-center bg-[#267b9a]/10 rounded-xl">
-                    {feature.icon}
+              <div key={i} className="keen-slider__slide h-auto min-h-full">
+                <div className="flex flex-col h-full bg-zinc-900/30 backdrop-blur-xl border border-white/10 p-8 md:p-10 rounded-[2rem] transition-all duration-500 hover:bg-zinc-800/40 hover:border-[#267b9a]/50 group/card">
+                  <div className="flex-1">
+                    <div className="w-14 h-14 flex items-center justify-center bg-[#267b9a]/20 text-[#267b9a] text-2xl rounded-2xl mb-8 group-hover/card:scale-110 group-hover/card:bg-[#267b9a] group-hover/card:text-white transition-all duration-500">
+                      {feature.icon}
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-4 tracking-tight">
+                      {feature.title}
+                    </h3>
+                    <p className="text-zinc-400 text-base leading-relaxed mb-8">
+                      {feature.description}
+                    </p>
+                  </div>
+                  
+                  {/* Bottom animated line */}
+                  <div className="relative h-1 w-12 bg-zinc-800 rounded-full overflow-hidden group-hover/card:w-full transition-all duration-700">
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#267b9a] to-[#40a9cf]" />
                   </div>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  {feature.description}
-                </p>
               </div>
             ))}
           </div>
 
-          {/* Arrows */}
+          {/* Nav Controls */}
           <button
             onClick={() => instanceRef.current?.prev()}
-            className="absolute -left-5 top-1/2 -translate-y-1/2 bg-white border border-gray-200 rounded-full p-2 hover:bg-[#267b9a]/10 transition"
+            className="absolute -left-4 md:-left-8 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-zinc-900/80 border border-white/10 text-white backdrop-blur-md hover:bg-[#267b9a] transition-all z-20 shadow-xl"
+            aria-label="Previous slide"
           >
-            <ChevronLeft className="w-5 h-5 text-[#267b9a]" />
+            <ChevronLeft size={20} />
           </button>
           <button
             onClick={() => instanceRef.current?.next()}
-            className="absolute -right-5 top-1/2 -translate-y-1/2 bg-white border border-gray-200 rounded-full p-2 hover:bg-[#267b9a]/10 transition"
+            className="absolute -right-4 md:-right-8 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-zinc-900/80 border border-white/10 text-white backdrop-blur-md hover:bg-[#267b9a] transition-all z-20 shadow-xl"
+            aria-label="Next slide"
           >
-            <ChevronRight className="w-5 h-5 text-[#267b9a]" />
+            <ChevronRight size={20} />
           </button>
         </div>
 
-        {/* Dots */}
-        <div className="flex justify-center mt-8 gap-2">
+        {/* Custom Progress Bar Style Dots */}
+        <div className="flex justify-center mt-16 gap-3">
           {features.map((_, idx) => (
             <button
               key={idx}
               onClick={() => instanceRef.current?.moveToIdx(idx)}
-              className={`w-2.5 h-2.5 rounded-full transition-all ${
-                currentSlide === idx
-                  ? "bg-[#267b9a]"
-                  : "bg-gray-300 hover:bg-[#267b9a]/60"
+              className={`h-1.5 rounded-full transition-all duration-500 ${
+                currentSlide === idx ? "w-12 bg-[#267b9a]" : "w-3 bg-zinc-800 hover:bg-zinc-700"
               }`}
             />
           ))}

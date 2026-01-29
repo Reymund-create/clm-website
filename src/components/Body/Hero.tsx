@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion, easeOut } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { LandingPageData } from "@/lib/api";
 
 interface VideoHeroProps {
@@ -9,39 +9,38 @@ interface VideoHeroProps {
 }
 
 /* ======================
-   MOTION VARIANTS
+    MOTION VARIANTS
 ====================== */
 
-const container = {
+const container: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.3,
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
     },
   },
 };
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 20 },
   show: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.7,
-      ease: easeOut,
+      duration: 0.8,
+      ease: [0.16, 1, 0.3, 1],
     },
   },
 };
 
-
-const buttonVariant = {
-  hidden: { opacity: 0, scale: 0.9 },
+const buttonVariant: Variants = {
+  hidden: { opacity: 0, scale: 0.95 },
   show: {
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.4 },
+    transition: { duration: 0.5 },
   },
 };
 
@@ -49,60 +48,55 @@ const VideoHero: React.FC<VideoHeroProps> = ({ data }) => {
   if (!data) return null;
 
   return (
-    <section className="relative flex items-center justify-center h-screen overflow-hidden">
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-black">
       {/* Video Background */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute z-10 w-auto min-w-full min-h-full max-w-none object-cover"
-      >
-        <source src={data.heroBackgound.url} type={data.heroBackgound.mime} />
-      </video>
+      <div className="absolute inset-0 z-10 overflow-hidden">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="h-full w-full object-cover opacity-50 scale-105"
+        >
+          <source src={data.heroBackgound.url} type={data.heroBackgound.mime} />
+        </video>
+      </div>
 
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/70 z-20" />
+      {/* Modern Gradient Overlays */}
+      <div className="absolute inset-0 z-20 bg-gradient-to-b from-black/70 via-transparent to-black" />
+      <div className="absolute inset-0 z-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-transparent via-black/10 to-black/90" />
 
-      {/* Content */}
+      {/* Content Container */}
       <motion.div
         variants={container}
         initial="hidden"
         animate="show"
-        className="relative z-30 flex max-w-4xl flex-col items-center px-6 text-center text-white sm:px-8"
+        className="relative z-30 flex max-w-6xl flex-col items-center px-6 text-center sm:px-8"
       >
         {/* Eyebrow */}
-        <motion.span
-          variants={fadeUp}
-          className="block text-xl font-semibold text-[#c65957] md:text-5xl mb-4"
-        >
-          {data.eyebrow}
-        </motion.span>
+        <motion.div variants={fadeUp} className="mb-6">
+          <span className="inline-block rounded-full border border-[#c65957]/30 bg-[#c65957]/10 px-4 py-1.5 text-sm font-bold uppercase tracking-widest text-[#c65957] backdrop-blur-md">
+            {data.eyebrow}
+          </span>
+        </motion.div>
 
-        {/* Headline */}
+        {/* Headline - Fixed Line Breaks */}
         <motion.h1
           variants={fadeUp}
-          className="text-4xl font-extrabold tracking-tight leading-tight md:text-5xl lg:text-6xl mb-4"
+          className="text-balance text-5xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl"
         >
-          {data.title.map((block, blockIndex) => (
-            <span key={blockIndex} className="block">
-              {block.children.map((child, childIndex) =>
-                child.bold ? (
-                  <span key={childIndex} className="text-[#267b9a]">
-                    {child.text}
-                  </span>
-                ) : (
-                  <span key={childIndex}>{child.text}</span>
-                )
-              )}
-            </span>
-          ))}
+          <span className="block leading-[1.1]">
+            The <span className="bg-gradient-to-r from-[#267b9a] to-[#40a9cf] bg-clip-text text-transparent">AI-First SEO Platform</span>
+          </span>
+          <span className="mt-2 block leading-[1.1]">
+            Built for Real Business Growth
+          </span>
         </motion.h1>
 
         {/* Description */}
         <motion.p
           variants={fadeUp}
-          className="mt-6 max-w-2xl text-lg font-normal text-zinc-200 md:text-xl"
+          className="mt-8 max-w-2xl text-lg leading-relaxed text-zinc-400 md:text-xl"
         >
           {data.description}
         </motion.p>
@@ -110,13 +104,12 @@ const VideoHero: React.FC<VideoHeroProps> = ({ data }) => {
         {/* CTA Buttons */}
         <motion.div
           variants={container}
-          className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6"
+          className="mt-12 flex flex-col items-center justify-center gap-5 sm:flex-row"
         >
           {data.button.map((btn, index) => {
             const isPrimary = index === 0;
-            const href = btn?.href?.trim()
-              ? btn.href
-              : "tel:630-447-8434";
+            const label = isPrimary ? btn.label : "Speak to an Expert";
+            const href = btn?.href?.trim() ? btn.href : "tel:630-447-8434";
 
             return (
               <motion.a
@@ -125,22 +118,28 @@ const VideoHero: React.FC<VideoHeroProps> = ({ data }) => {
                 target={btn.isExternal ? "_blank" : "_self"}
                 rel={btn.isExternal ? "noopener noreferrer" : undefined}
                 variants={buttonVariant}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={
-                  isPrimary
-                    ? "rounded-lg bg-[#267b9a] px-8 py-3 text-base font-semibold text-white shadow-[0_0_20px_rgba(38,123,154,0.5)] hover:bg-[#216a86]"
-                    : "rounded-lg border-2 border-[#267b9a] px-8 py-3 text-base font-semibold text-[#267b9a] shadow-[0_0_20px_rgba(38,123,154,0.35)] hover:bg-[#267b9a]/10 hover:shadow-[0_0_30px_rgba(38,123,154,0.6)]"
-                }
+                whileHover={{ y: -3 }}
+                whileTap={{ scale: 0.98 }}
+                className={`
+          group relative flex items-center justify-center gap-3 px-10 py-4 rounded-2xl font-bold transition-all duration-300
+          ${isPrimary
+                    ? "bg-[#267b9a] text-white shadow-[0_10px_40px_-10px_rgba(38,123,154,0.5)] hover:shadow-[0_20px_40px_-10px_rgba(38,123,154,0.6)]"
+                    : "border-2 border-[#267b9a]/40 bg-zinc-900 text-white hover:bg-[#267b9a] hover:border-[#267b9a] hover:shadow-[0_20px_40px_-10px_rgba(38,123,154,0.4)]"
+                  }
+        `}
               >
-                {btn.label}
+                {label}
+                <span className="group-hover:translate-x-1 transition-transform duration-300">
+                  →
+                </span>
               </motion.a>
-
             );
           })}
         </motion.div>
       </motion.div>
-    </section>
+
+
+      <div className="absolute -bottom-48 left-1/2 z-20 h-96 w-[80%] -translate-x-1/2 bg-[#267b9a]/25 blur-[150px] opacity-70" />    </section>
   );
 };
 
