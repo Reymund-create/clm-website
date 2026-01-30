@@ -545,3 +545,18 @@ export async function getTechnicalSeoPage(): Promise<TechnicalSeoPageData | null
     return null;
   }
 }
+export async function getAllServices(): Promise<ServicePageData[]> {
+  try {
+    // We use populate=* to get the metaTitle and slug for the cards
+    const res = await fetch(`${STRAPI_URL}/api/services?populate=*`, {
+      next: { revalidate: 60 },
+    });
+
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json.data || [];
+  } catch (error) {
+    console.error("Error fetching all services:", error);
+    return [];
+  }
+}
