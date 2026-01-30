@@ -174,8 +174,12 @@ const BlockRenderer = ({ blocks }: BlockRendererProps) => {
             <motion.div initial="hidden" animate="visible" variants={fadeInUp} className="relative z-10 max-w-5xl mx-auto px-6 text-center">
               <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight tracking-tight drop-shadow-2xl">{heroHeadingBlock.heading}</h1>
               <div className="flex justify-center mt-10">
-                <div className="w-24 h-1.5 bg-[#267b9a] rounded-full shadow-[0_0_15px_rgba(38,123,154,0.8)]"></div>
-              </div>
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: 96 }}
+                  transition={{ delay: 0.5, duration: 0.8 }}
+                  className="h-1.5 bg-gradient-to-r from-[#267b9a] to-cyan-400 rounded-full shadow-[0_0_20px_rgba(38,123,154,0.6)] mx-auto mb-10"
+                />              </div>
             </motion.div>
           )}
         </section>
