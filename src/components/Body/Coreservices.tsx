@@ -48,8 +48,8 @@ export default function CoreServices() {
 
       {/* 2. BACKGROUND DECORATION */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,#1a1a1a_1px,transparent_0)] bg-[length:40px_40px] opacity-20" />
-      <div className="absolute top-1/4 -right-20 w-[600px] h-[600px] bg-[#267b9a]/5 blur-[150px] rounded-full" />
-      <div className="absolute bottom-0 -left-20 w-[500px] h-[500px] bg-[#267b9a]/10 blur-[130px] rounded-full" />
+      <div className="absolute top-1/4 -right-20 w-[1000px] h-[600px] bg-[#267b9a]/50 blur-[350px] rounded-full" />
+      <div className="absolute bottom-0 -left-20 w-[1000px] h-[500px] bg-[#267b9a]/50 blur-[250px] rounded-full" />
 
       <div className="relative z-30 max-w-7xl mx-auto px-6 -mt-20 lg:-mt-32">
 

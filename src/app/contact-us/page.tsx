@@ -57,7 +57,7 @@ export default function ContactPage() {
     <div className="bg-white flex flex-col min-h-screen">
       
       {/* --- HERO SECTION --- */}
-      <section className="relative w-full min-h-[500px] flex items-center justify-center bg-[#0f172a] overflow-hidden px-4">
+      <section className="relative w-full min-h-[85vh] flex items-center justify-center bg-[#0f172a] overflow-hidden px-4">
         <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] bg-[#267b9a] rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-pulse pointer-events-none"></div>
         <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-purple-900 rounded-full mix-blend-screen filter blur-[120px] opacity-20 pointer-events-none"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/80 to-transparent pointer-events-none" />

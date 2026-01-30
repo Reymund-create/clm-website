@@ -10,8 +10,7 @@ const CTASection = () => {
   return (
     <section className="relative bg-[#050505] py-32 lg:py-48 overflow-hidden">
       
-      {/* 1. BACKGROUND ACCENTS (Matching CoreServices style) */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#267b9a]/10 blur-[140px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] bg-[#267b9a]/80 blur-[690px] rounded-full pointer-events-none" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,#1a1a1a_1px,transparent_0)] bg-[length:40px_40px] opacity-20" />
 
       <motion.div
@@ -21,7 +20,6 @@ const CTASection = () => {
         viewport={{ once: true }}
         className="relative z-10 text-center max-w-4xl mx-auto px-6"
       >
-        {/* SMALL BADGE */}
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#267b9a]/30 bg-[#267b9a]/5 text-[#267b9a] text-[10px] font-black uppercase tracking-[0.3em] mb-8">
           Next Steps
         </div>
@@ -35,7 +33,6 @@ const CTASection = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
-          {/* ✅ PRIMARY BUTTON - INTEGRATED DESIGN */}
           <MotionLink
             href="/contact-us"
             whileHover={{ y: -3 }}
@@ -48,7 +45,6 @@ const CTASection = () => {
             </span>
           </MotionLink>
 
-          {/* SECONDARY BUTTON */}
           <MotionLink
             href="tel:630-447-8434"
             whileHover={{ y: -3 }}

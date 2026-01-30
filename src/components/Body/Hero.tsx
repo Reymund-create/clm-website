@@ -139,7 +139,7 @@ const VideoHero: React.FC<VideoHeroProps> = ({ data }) => {
       </motion.div>
 
 
-      <div className="absolute -bottom-48 left-1/2 z-20 h-96 w-[80%] -translate-x-1/2 bg-[#267b9a]/25 blur-[150px] opacity-70" />    </section>
+      <div className="absolute -bottom-48 left-1/2 z-20 h-100 w-[100%] -translate-x-1/2 bg-[#267b9a]/50 blur-[250px] opacity-70" />    </section>
   );
 };
 
