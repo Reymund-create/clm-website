@@ -14,14 +14,16 @@ const fadeInUp: Variants = {
   }
 };
 
-const staggerContainer: Variants = {
-  hidden: { opacity: 1 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 }
-  }
+// const staggerContainer: Variants = {
+//   hidden: { opacity: 1 },
+//   visible: {
+//     opacity: 1,
+//     transition: { staggerChildren: 0.1 }
+//   }
+// };
+const staggerContainer = {
+  visible: { transition: { staggerChildren: 0.1 } }
 };
-
 export default function ContactPage() {
 
   // --- THE FIX: Clean Script Injection ---
@@ -81,109 +83,94 @@ export default function ContactPage() {
           </p>
         </motion.div>
       </section>
+      <section className="relative bg-zinc-50 py-24 lg:py-40 overflow-hidden">
 
-      {/* --- MAIN CONTENT GRID --- */}
-      <div className="grow w-full py-24 overflow-hidden">
-        <div className="max-w-6xl mx-auto px-6">
+        {/* 1. TOP WAVE (Aligning with HowItWorks) */}
+        <div className="absolute top-0 left-0 w-full h-48 overflow-hidden leading-[0] z-10 pointer-events-none">
+          <svg className="relative block w-full h-full transform scale-x-110" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="contact-wave-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#267b9a" stopOpacity="0.15" />
+                <stop offset="100%" stopColor="white" stopOpacity="1" />
+              </linearGradient>
+            </defs>
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="url(#contact-wave-gradient)"></path>
+          </svg>
+        </div>
 
+        {/* 2. PARALLAX ACCENT BLOBS */}
+        <div className="absolute top-1/4 -right-20 w-[500px] h-[500px] bg-[#267b9a]/5 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute bottom-0 -left-20 w-[400px] h-[400px] bg-[#40a9cf]/10 blur-[100px] rounded-full pointer-events-none" />
+        {/* 3. MAIN CONTENT */}
+        <div className="relative z-20 max-w-7xl mx-auto px-6">
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
-            className="grid lg:grid-cols-2 gap-16"
+            className="grid lg:grid-cols-5 gap-16 items-start"
           >
 
-            {/* LEFT COLUMN: Contact Info */}
-            <motion.div variants={fadeInUp} className="space-y-10">
-              <div>
-                <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight mb-6">
-                  Let's start a conversation
+            {/* LEFT COLUMN: Contact Info (Sticky Heading Style) */}
+            <motion.div variants={fadeInUp} className="lg:col-span-2 space-y-10">
+              <div className="lg:sticky lg:top-32">
+                <h2 className="text-5xl md:text-6xl font-bold text-zinc-900 leading-[1.1] mb-8 tracking-tight">
+                  Let's start a <span className="bg-gradient-to-r from-[#267b9a] to-[#40a9cf] bg-clip-text text-transparent italic font-light">conversation.</span>
                 </h2>
-                <p className="text-gray-600 text-lg leading-relaxed mb-8">
-                  Whether you have a question about features, pricing, or need a demo, our team is ready to answer all your questions.
+                <p className="text-zinc-500 text-lg md:text-xl max-w-sm leading-relaxed mb-12">
+                  Whether you have a question about features, pricing, or need a demo, our team is ready to scale with you.
                 </p>
-              </div>
 
-              {/* Contact Items */}
-              <div className="space-y-6">
-
-                {/* Email Item */}
-                <div className="flex items-start p-6 bg-gray-50 rounded-xl hover:bg-white hover:shadow-xl hover:border-[#267b9a]/30 border border-transparent transition-all duration-300 group">
-                  <div className="shrink-0 w-12 h-12 rounded-full bg-[#f0f9fb] flex items-center justify-center text-[#267b9a] group-hover:bg-[#267b9a] group-hover:text-white transition-colors duration-300">
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
+                {/* Contact Items - Glassmorphism style */}
+                <div className="space-y-4">
+                  {/* Email Item */}
+                  <div className="flex items-center p-6 bg-white/40 backdrop-blur-xl border border-zinc-200/50 rounded-[2rem] hover:bg-white hover:shadow-2xl hover:shadow-zinc-200/50 transition-all duration-500 group">
+                    <div className="shrink-0 w-12 h-12 rounded-2xl bg-[#267b9a] text-white flex items-center justify-center shadow-lg shadow-[#267b9a]/20">
+                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <div className="ml-6">
+                      <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Email Us</h3>
+                      <p className="text-lg font-bold text-zinc-900 break-all">michael@confluencelocalmarketing.com</p>
+                    </div>
                   </div>
-                  <div className="ml-6">
-                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#267b9a] transition-colors">Email Us</h3>
-                    <p className="mt-1 text-gray-600">michael@confluencelocalmarketing.com</p>
+
+                  {/* Location Item */}
+                  <div className="flex items-center p-6 bg-white/40 backdrop-blur-xl border border-zinc-200/50 rounded-[2rem] hover:bg-white hover:shadow-2xl hover:shadow-zinc-200/50 transition-all duration-500 group">
+                    <div className="shrink-0 w-12 h-12 rounded-2xl bg-zinc-900 text-white flex items-center justify-center shadow-lg">
+                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </div>
+                    <div className="ml-6">
+                      <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Our Office</h3>
+                      <p className="text-lg font-bold text-zinc-900">Naperville, IL 60563, USA</p>
+                    </div>
                   </div>
                 </div>
-
-                {/* Location Item */}
-                <div className="flex items-start p-6 bg-gray-50 rounded-xl hover:bg-white hover:shadow-xl hover:border-[#267b9a]/30 border border-transparent transition-all duration-300 group">
-                  <div className="shrink-0 w-12 h-12 rounded-full bg-[#f0f9fb] flex items-center justify-center text-[#267b9a] group-hover:bg-[#267b9a] group-hover:text-white transition-colors duration-300">
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                  </div>
-                  <div className="ml-6">
-                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#267b9a] transition-colors">Our Office</h3>
-                    <p className="mt-1 text-gray-600">2020 Calamos Ct, Naperville, IL 60563,<br />United States</p>
-                  </div>
-                </div>
-
               </div>
             </motion.div>
 
-            {/* RIGHT COLUMN: Paperform Embed */}
-            <motion.div variants={fadeInUp}>
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden min-h-[400px]">
+            {/* RIGHT COLUMN: Paperform Embed (Glass Box) */}
+            <motion.div variants={fadeInUp} className="lg:col-span-3">
+              <div className="relative group">
+                {/* Outer Glow */}
+                <div className="absolute -inset-4 bg-gradient-to-r from-[#267b9a]/20 to-[#40a9cf]/20 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
-                {/* The Paperform DIV */}
-                <div data-paperform-id="smg9wu0g"></div>
-
+                <div className="relative bg-white backdrop-blur-2xl rounded-[3rem] shadow-2xl shadow-zinc-200/50 border border-zinc-200 overflow-hidden p-2">
+                  <div className="bg-zinc-50/50 rounded-[2.5rem] min-h-[600px] flex items-center justify-center">
+                    {/* The Paperform DIV */}
+                    <div className="w-full" data-paperform-id="smg9wu0g"></div>
+                  </div>
+                </div>
               </div>
             </motion.div>
 
           </motion.div>
         </div>
-      </div>
-
-      {/* --- BOTTOM CTA --- */}
-      <div className="px-6 pb-24">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeInUp}
-          className="max-w-6xl mx-auto bg-gradient-to-r from-[#267b9a] to-[#1f637c] rounded-[2.5rem] shadow-2xl shadow-[#267b9a]/30 overflow-hidden relative"
-        >
-          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.7)_1px,transparent_0)] bg-[length:20px_20px]" />
-
-          <div className="relative z-10 px-8 py-12 md:px-16 md:py-16 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 text-center md:text-left">
-            <div className="flex-1">
-              <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight mb-4">
-                Not ready to contact us yet?
-              </h2>
-              <p className="text-indigo-100 text-lg md:text-lg opacity-90 max-w-2xl">
-                Check out our FAQ page to see if we've already answered your question.
-              </p>
-            </div>
-            <div className="shrink-0">
-              <Link
-                href="/"
-                className="inline-block px-10 py-4 text-lg rounded-md font-bold transition-all duration-300 transform hover:-translate-y-1 shadow-xl bg-white text-[#267b9a] hover:bg-gray-50"
-              >
-                View FAQs
-              </Link>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-
+      </section>
     </div>
   );
 }

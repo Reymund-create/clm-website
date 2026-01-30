@@ -50,7 +50,7 @@ export default async function PromptGraphPage() {
       <GlobalBlockRenderer blocks={promptGraphPage} />
 
       {/* Bottom CTA Section (Static / Hybrid) */}
-      <PromptGraphCTA />
+      {/* <PromptGraphCTA /> */}
     </main>
   );
 }
