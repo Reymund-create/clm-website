@@ -102,7 +102,7 @@ const Footer: React.FC = () => {
           </p>
           <div className="flex gap-6 text-xs underline underline-offset-4 decoration-zinc-800 hover:decoration-[#267b9a]">
             <Link href="/privacy-policy">Privacy Policy</Link>
-            <Link href="/terms">Terms of Service</Link>
+            {/* <Link href="/terms">Terms of Service</Link> */}
           </div>
         </div>
       </div>
