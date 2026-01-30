@@ -14,13 +14,7 @@ const fadeInUp: Variants = {
   }
 };
 
-// const staggerContainer: Variants = {
-//   hidden: { opacity: 1 },
-//   visible: {
-//     opacity: 1,
-//     transition: { staggerChildren: 0.1 }
-//   }
-// };
+// 
 const staggerContainer = {
   visible: { transition: { staggerChildren: 0.1 } }
 };
@@ -132,7 +126,7 @@ export default function ContactPage() {
                     </div>
                     <div className="ml-6">
                       <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Email Us</h3>
-                      <p className="text-lg font-bold text-zinc-900 break-all">michael@confluencelocalmarketing.com</p>
+                      <p className="text-lg font-bold text-zinc-900 break-all">station@conflueencelocalmarketing.com</p>
                     </div>
                   </div>
 
