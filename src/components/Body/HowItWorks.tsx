@@ -56,12 +56,12 @@ export default function HowItWorks() {
       </div>
 
       {/* 2. SEAMLESS BOTTOM EXIT */}
-      <div className="absolute bottom-0 left-0 right-0 h-80 z-30 pointer-events-none">
+      <div className="absolute bottom-0 left-0 right-0 h-30 z-30 pointer-events-none">
         {/* The color transition to the next section's background (#050505) */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/60 to-transparent" />
 
         {/* The Frosty Blur to hide the hard line of the next section's start */}
-        <div className="absolute inset-0 backdrop-blur-3xl [mask-image:linear-gradient(to_top,black,transparent)] opacity-90" />
+        <div className="absolute inset-0 backdrop-blur-3xl [mask-image:linear-gradient(to_top,black,transparent)] opacity-20" />
       </div>
 
       {/* 3. PARALLAX ACCENT BLOBS */}

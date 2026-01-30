@@ -38,7 +38,7 @@ export default function CoreServices() {
     <section className="relative bg-[#050505] py-24 lg:py-40 overflow-hidden">
 
       {/* 1. SEAMLESS TOP EDGE */}
-      <div className="absolute top-0 left-0 right-0 h-64 z-20 pointer-events-none">
+      <div className="absolute top-0 left-0 right-0 h-30 z-20 pointer-events-none">
         {/* Pulls the zinc-50 color from the section above into a soft glow */}
         <div className="absolute inset-0 bg-gradient-to-b from-zinc-50/40 via-transparent to-transparent opacity-50" />
 
@@ -51,7 +51,7 @@ export default function CoreServices() {
       <div className="absolute top-1/4 -right-20 w-[600px] h-[600px] bg-[#267b9a]/5 blur-[150px] rounded-full" />
       <div className="absolute bottom-0 -left-20 w-[500px] h-[500px] bg-[#267b9a]/10 blur-[130px] rounded-full" />
 
-      <div className="relative z-40 max-w-7xl mx-auto px-6 -mt-20 lg:-mt-32">
+      <div className="relative z-30 max-w-7xl mx-auto px-6 -mt-20 lg:-mt-32">
 
         {/* HEADING SECTION */}
         <div className="text-center mb-24">
