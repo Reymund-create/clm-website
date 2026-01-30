@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 
@@ -24,33 +25,87 @@ const fadeInUp: Variants = {
 // --- RENDERER ---
 const renderRichText = (nodes: (RichTextNode | RichTextChild)[], textColorClass: string = "text-slate-600") => {
   if (!nodes) return null;
+
   return nodes.map((node, index) => {
+    // 1. Handle Text Nodes (Leafs)
     if (node.type === 'text') {
       const textNode = node as any;
       let content: React.ReactNode = textNode.text;
+
       if (textNode.bold) content = <strong key="bold" className="font-bold text-slate-900">{content}</strong>;
       if (textNode.italic) content = <em key="italic" className="italic">{content}</em>;
       if (textNode.code) content = <code key="code" className="bg-slate-100 text-[#267b9a] px-1.5 py-0.5 rounded text-sm font-mono border border-slate-200">{content}</code>;
+
       return <span key={index}>{content}</span>;
     }
+
+    // 2. Handle Block Nodes (Containers)
     const blockNode = node as any;
     switch (blockNode.type) {
       case 'paragraph':
-        if (!blockNode.children.length) return <div key={index} className="h-4" />;
-        return <p key={index} className={`mb-6 text-lg leading-8 ${textColorClass} last:mb-0`}>{renderRichText(blockNode.children, textColorClass)}</p>;
+        if (!blockNode.children.length || (blockNode.children.length === 1 && blockNode.children[0].text === "")) {
+          return <div key={index} className="h-4" />;
+        }
+        return (
+          <p key={index} className={`mb-6 text-lg leading-8 ${textColorClass} last:mb-0`}>
+            {renderRichText(blockNode.children, textColorClass)}
+          </p>
+        );
+
       case 'heading':
         const level = blockNode.level || 3;
         const Tag = `h${level}` as React.ElementType;
         const size = level === 1 ? 'text-5xl' : level === 2 ? 'text-4xl' : 'text-2xl';
-        return <Tag key={index} className={`${size} font-bold mt-12 mb-6 tracking-tight text-slate-900`}>{renderRichText(blockNode.children, textColorClass)}</Tag>;
+        return (
+          <Tag key={index} className={`${size} font-bold mt-12 mb-6 tracking-tight text-slate-900`}>
+            {renderRichText(blockNode.children, textColorClass)}
+          </Tag>
+        );
+
       case 'list':
         const isOrdered = blockNode.format === 'ordered';
         const ListTag = isOrdered ? 'ol' : 'ul';
-        const listClass = isOrdered ? "list-decimal pl-6 mb-8 font-bold text-slate-900" : "list-disc pl-6 mb-8 marker:text-[#267b9a]";
-        return <ListTag key={index} className={`${listClass} ${textColorClass} space-y-3 text-lg`}>{renderRichText(blockNode.children, textColorClass)}</ListTag>;
+        // Note: We removed the font-bold from the container so it doesn't force all text to be bold
+        const listClass = isOrdered
+          ? "list-decimal pl-8 mb-8"
+          : "list-disc pl-8 mb-8 marker:text-[#267b9a]";
+
+        return (
+          <ListTag key={index} className={`${listClass} ${textColorClass} space-y-3 text-lg`}>
+            {renderRichText(blockNode.children, textColorClass)}
+          </ListTag>
+        );
+
+      case 'list-item':
+        // This was the missing link!
+        return (
+          <li key={index} className="pl-2">
+            {renderRichText(blockNode.children, textColorClass)}
+          </li>
+        );
+
       case 'link':
-        return <a key={index} href={blockNode.url} className="text-[#267b9a] font-bold underline decoration-[#267b9a]/30 hover:decoration-[#267b9a] transition-all">{renderRichText(blockNode.children, "text-[#267b9a]")}</a>;
-      default: return null;
+        return (
+          <a
+            key={index}
+            href={blockNode.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#267b9a] font-bold underline decoration-[#267b9a]/30 hover:decoration-[#267b9a] transition-all"
+          >
+            {renderRichText(blockNode.children, "text-[#267b9a]")}
+          </a>
+        );
+
+      case 'quote':
+        return (
+          <blockquote key={index} className="border-l-4 border-[#267b9a] pl-6 my-8 italic text-slate-700 bg-slate-50 py-4 rounded-r-lg">
+            {renderRichText(blockNode.children, textColorClass)}
+          </blockquote>
+        );
+
+      default:
+        return null;
     }
   });
 };
@@ -163,26 +218,42 @@ const BlockRenderer = ({ blocks }: BlockRendererProps) => {
       </div>
 
       {/* --- FOOTER CTA --- */}
-      <div className="px-6 pb-24">
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp} className="max-w-6xl mx-auto bg-gradient-to-r from-[#267b9a] to-[#1f637c] rounded-[3rem] shadow-[0_30px_60px_rgba(38,123,154,0.3)] overflow-hidden relative">
-          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.7)_1px,transparent_0)] bg-[length:20px_20px]" />
-          <div className="relative z-10 px-10 py-20 flex flex-col md:flex-row items-center justify-between gap-10">
-            <div className="flex-1 text-center md:text-left">
-              <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-4">Ready to take the next step?</h2>
-              <p className="text-indigo-100 text-lg opacity-90">Let’s discuss how we can help you achieve your goals.</p>
+      <section className="px-6 pb-24 relative overflow-hidden bg-slate-50/50">
+        <motion.div initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="max-w-6xl mx-auto relative group">
+          <div className="relative overflow-hidden rounded-[3rem] bg-[#0f172a] shadow-[0_40px_80px_rgba(0,0,0,0.4)]">
+
+            {/* CTA Background FX */}
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#267b9a] rounded-full mix-blend-screen filter blur-[120px] opacity-30 animate-pulse" />
+              <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-900 rounded-full mix-blend-screen filter blur-[100px] opacity-30" />
+              <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 contrast-150" />
             </div>
-            {ctaButtons.length > 0 && (
-              <div className="flex-shrink-0 flex flex-col sm:flex-row gap-4">
-                {ctaButtons.map((button, index) => (
-                  <a key={index} href={`tel:${button.phoneNumber}`} className={`px-10 py-5 text-sm font-bold uppercase tracking-widest rounded-xl transition-all duration-300 transform hover:-translate-y-1 shadow-lg text-center whitespace-nowrap ${index === 0 ? "bg-white text-[#0f172a] hover:bg-slate-50" : "bg-transparent border-2 border-white text-white hover:bg-white/10"}`}>
-                    {button.label}
-                  </a>
-                ))}
+
+            <div className="relative z-10 px-10 py-24 md:px-24 flex flex-col lg:flex-row items-center justify-between gap-12 text-center lg:text-left">
+              <div className="flex-1">
+                <span className="inline-block px-4 py-2 mb-6 text-xs font-bold tracking-[0.2em] text-cyan-300 uppercase bg-cyan-900/30 border border-cyan-500/30 rounded-full backdrop-blur-md">
+                  Ready to scale?
+                </span>
+                <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight mb-6">
+                  Transform your marketing <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-[#267b9a]">into an AI powerhouse.</span>
+                </h2>
+                <p className="text-slate-400 text-lg max-w-xl">
+                  Join forward-thinking brands leveraging our proprietary frameworks.
+                </p>
               </div>
-            )}
+              <div className="shrink-0">
+                <Link href="/contact-us" className="group/btn relative inline-flex items-center justify-center">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-[#267b9a] to-cyan-400 rounded-xl blur opacity-40 group-hover/btn:opacity-75 transition duration-500" />
+                  <button className="relative px-12 py-6 bg-white text-[#0f172a] text-sm font-bold uppercase tracking-widest rounded-xl transition-all duration-300 transform group-hover/btn:-translate-y-1 group-active/btn:translate-y-0 flex items-center gap-3">
+                    Let's Talk Strategy
+                    <svg className="w-5 h-5 text-[#267b9a] transition-transform group-hover/btn:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                  </button>
+                </Link>
+              </div>
+            </div>
           </div>
         </motion.div>
-      </div>
+      </section>
     </div>
   );
 };

@@ -38,7 +38,6 @@ const renderRichText = (nodes: (ServiceRichTextNode | ServiceRichTextChild)[], t
     if (node.type === 'text') {
       const textNode = node as any;
       let content: React.ReactNode = textNode.text;
-
       const isDarkBackground = textColorClass.includes("white");
 
       if (textNode.bold) content = <strong key="bold" className={`font-black ${isDarkBackground ? "text-white" : "text-slate-900"}`}>{content}</strong>;
@@ -76,19 +75,20 @@ const renderRichText = (nodes: (ServiceRichTextNode | ServiceRichTextChild)[], t
       case 'list':
         const isOrdered = blockNode.format === 'ordered';
         const ListTag = isOrdered ? 'ol' : 'ul';
+        // Ensure list-style-type is explicitly set and padding is sufficient for bullets
         const listClass = isOrdered
-          ? `list-decimal pl-6 mb-8 text-lg font-bold ${textColorClass}`
-          : `list-disc pl-6 mb-8 text-lg marker:text-[#267b9a] ${textColorClass}`;
+          ? "list-decimal ml-6 mb-8 space-y-2"
+          : "list-disc ml-6 mb-8 space-y-2 marker:text-[#267b9a]";
 
         return (
-          <ListTag key={index} className={listClass}>
+          <ListTag key={index} className={`${listClass} ${textColorClass}`}>
             {renderRichText(blockNode.children, textColorClass)}
           </ListTag>
         );
 
       case 'list-item':
         return (
-          <li key={index} className={`pl-2 ${textColorClass} leading-relaxed`}>
+          <li key={index} className="pl-2 leading-relaxed">
             {renderRichText(blockNode.children, textColorClass)}
           </li>
         );
@@ -97,7 +97,6 @@ const renderRichText = (nodes: (ServiceRichTextNode | ServiceRichTextChild)[], t
     }
   });
 };
-
 // --- TEAM CARD COMPONENT (WITH MODAL) ---
 
 const TeamCard = ({ card }: { card: MeetTheTeamCardItem }) => {
@@ -401,35 +400,42 @@ export default function MeetTheTeamRenderer({ blocks }: RendererProps) {
       </div>
 
       {/* --- FOOTER CTA --- */}
-      <div className="px-6 pb-24 bg-slate-50/50">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeInUp}
-          className="max-w-6xl mx-auto bg-gradient-to-r from-[#267b9a] to-[#1f637c] rounded-[3rem] shadow-[0_30px_60px_rgba(38,123,154,0.3)] overflow-hidden relative"
-        >
-          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.7)_1px,transparent_0)] bg-[length:20px_20px]" />
-          <div className="relative z-10 px-10 py-20 flex flex-col md:flex-row items-center justify-between gap-10">
-            <div className="text-center md:text-left">
-              <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-4">
-                Ready to take the next step?
-              </h2>
-              <p className="text-indigo-100 text-lg opacity-90 max-w-xl">
-                Let’s discuss how our team can help you achieve your goals faster.
-              </p>
+      <section className="px-6 pb-24 relative overflow-hidden bg-slate-50/50">
+        <motion.div initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="max-w-6xl mx-auto relative group">
+          <div className="relative overflow-hidden rounded-[3rem] bg-[#0f172a] shadow-[0_40px_80px_rgba(0,0,0,0.4)]">
+
+            {/* CTA Background FX */}
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#267b9a] rounded-full mix-blend-screen filter blur-[120px] opacity-30 animate-pulse" />
+              <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-900 rounded-full mix-blend-screen filter blur-[100px] opacity-30" />
+              <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 contrast-150" />
             </div>
-            <div className="shrink-0">
-              <Link
-                href="/contact-us"
-                className="inline-block bg-white text-[#0f172a] px-10 py-5 text-[13px] font-black uppercase tracking-[0.15em] rounded-xl hover:bg-slate-50 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1"
-              >
-                Contact Us
-              </Link>
+
+            <div className="relative z-10 px-10 py-24 md:px-24 flex flex-col lg:flex-row items-center justify-between gap-12 text-center lg:text-left">
+              <div className="flex-1">
+                <span className="inline-block px-4 py-2 mb-6 text-xs font-bold tracking-[0.2em] text-cyan-300 uppercase bg-cyan-900/30 border border-cyan-500/30 rounded-full backdrop-blur-md">
+                  Ready to scale?
+                </span>
+                <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight mb-6">
+                  Transform your marketing <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-[#267b9a]">into an AI powerhouse.</span>
+                </h2>
+                <p className="text-slate-400 text-lg max-w-xl">
+                  Join forward-thinking brands leveraging our proprietary frameworks.
+                </p>
+              </div>
+              <div className="shrink-0">
+                <Link href="/contact-us" className="group/btn relative inline-flex items-center justify-center">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-[#267b9a] to-cyan-400 rounded-xl blur opacity-40 group-hover/btn:opacity-75 transition duration-500" />
+                  <button className="relative px-12 py-6 bg-white text-[#0f172a] text-sm font-bold uppercase tracking-widest rounded-xl transition-all duration-300 transform group-hover/btn:-translate-y-1 group-active/btn:translate-y-0 flex items-center gap-3">
+                    Let's Talk Strategy
+                    <svg className="w-5 h-5 text-[#267b9a] transition-transform group-hover/btn:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                  </button>
+                </Link>
+              </div>
             </div>
           </div>
         </motion.div>
-      </div>
+      </section>
     </div>
   );
 }

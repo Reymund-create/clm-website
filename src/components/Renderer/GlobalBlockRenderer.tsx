@@ -228,38 +228,66 @@ const FaqItem = ({ item }: { item: ComponentFaqItem }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="mb-4">
-      <div
-        onClick={() => setIsOpen(!isOpen)}
-        className={`group cursor-pointer rounded-2xl border bg-white transition-all duration-300 overflow-hidden
-          ${isOpen ? 'border-[#267b9a] shadow-lg shadow-[#267b9a]/10' : 'border-slate-200 hover:border-[#267b9a]/50 hover:shadow-md'}`}
+    <div className="mb-6">
+      <motion.div
+        initial={false}
+        className={`group border transition-all duration-500 rounded-[2rem] overflow-hidden ${
+          isOpen
+            ? "bg-white border-[#267b9a]/30 shadow-[0_20px_50px_rgba(38,123,154,0.15)]"
+            : "bg-white border-slate-200 hover:border-slate-300 hover:shadow-md"
+        }`}
       >
-        <div className="flex items-center justify-between p-6 bg-white z-10 relative">
-          <h3 className={`text-lg font-bold transition-colors duration-300 ${isOpen ? 'text-[#267b9a]' : 'text-slate-900 group-hover:text-[#267b9a]'}`}>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-full flex justify-between items-center px-8 py-7 text-left outline-none bg-transparent"
+        >
+          <span
+            className={`text-lg md:text-xl font-bold tracking-tight transition-colors duration-300 ${
+              isOpen ? "text-[#267b9a]" : "text-slate-800 group-hover:text-slate-900"
+            }`}
+          >
             {item.title}
-          </h3>
-          <div className={`ml-4 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500 ${isOpen ? 'bg-[#267b9a] text-white rotate-180' : 'bg-slate-100 text-slate-500 group-hover:bg-[#267b9a] group-hover:text-white'}`}>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+          </span>
+
+          <div
+            className={`flex-shrink-0 ml-4 w-10 h-10 rounded-full border flex items-center justify-center transition-all duration-500 ${
+              isOpen
+                ? "bg-[#267b9a] border-[#267b9a] text-white rotate-180 shadow-[0_0_15px_rgba(38,123,154,0.4)]"
+                : "bg-slate-50 border-slate-200 text-slate-400 rotate-0"
+            }`}
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              strokeWidth="3"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
           </div>
-        </div>
+        </button>
 
-        <AnimatePresence>
+        <AnimatePresence initial={false}>
           {isOpen && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} // Match your "Apple" ease
             >
-              <div className="px-6 pb-8 pt-2 text-slate-600 leading-relaxed border-t border-slate-50">
-                {renderRichText(item.content, "text-slate-600")}
+              <div className="px-8 pb-8">
+                {/* Visual Divider consistent with your card design */}
+                <div className="h-[1px] w-full bg-gradient-to-r from-slate-100 via-slate-50 to-transparent mb-6" />
+                
+                <div className="prose prose-slate max-w-none text-slate-600 text-base md:text-lg leading-relaxed">
+                  {renderRichText(item.content, "text-slate-600")}
+                </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
     </div>
   );
 };
