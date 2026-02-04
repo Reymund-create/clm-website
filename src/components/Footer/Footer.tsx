@@ -20,7 +20,7 @@ const Footer: React.FC = () => {
     { name: "Facebook", href: "https://www.facebook.com/Confluencelocalmarketing/", icon: <FaFacebook size={18} /> },
     { name: "YouTube", href: "https://www.youtube.com/c/Confluencelocalmarketing", icon: <FaYoutube size={18} /> },
     { name: "LinkedIn", href: "https://www.linkedin.com/company/confluence-local-marketing", icon: <FaLinkedin size={18} /> },
-    { name: "Maps", href: "https://www.google.com/maps/dir/Confluence+Local+Marketing,+2020+Calamos+Ct,+Naperville,+IL+60563/2020+Calamos+Ct,+Naperville,+IL+60563/@40.4848495,-86.976014,8z/data=!3m2!4b1!5s0x880ef8e74bdfc8e7:0xd5c6e936527cf4a2!4m13!4m12!1m5!1m1!1s0x880e57eff5fc1b93:0x67296514c59f316d!2m2!1d-88.2019069!2d41.8052949!1m5!1m1!1s0x880e57eff5fc1b93:0x67296514c59f316d!2m2!1d-88.2019069!2d41.8052949?hl=en&authuser=0&entry=ttu&g_ep=EgoyMDI2MDExMy4wIKXMDSoASAFQAw%3D%3D", icon: <FaMapMarkedAlt size={18} /> }
+    { name: "Maps", href: "https://www.google.com/maps/place/Confluence+Local+Marketing/@41.8052949,-88.2044818,17z/data=!3m1!4b1!4m6!3m5!1s0x880e57eff5fc1b93:0x67296514c59f316d!8m2!3d41.8052949!4d-88.2019069!16s%2Fg%2F11gxx60q18?entry=ttu&g_ep=EgoyMDI2MDIwMS4wIKXMDSoKLDEwMDc5MjA2N0gBUAM%3D", icon: <FaMapMarkedAlt size={18} /> }
   ];
 
   return (
