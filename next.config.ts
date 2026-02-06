@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   async redirects() { // Change back to redirects
     return [
       {
-        source: '/ai-sitemap.xml',
+        source: '/sitemap.xml',
         destination: 'https://app.promptgraph.ai/api/v1/confluence-local-marketing/ai-sitemap.xml',
         permanent: false, 
       },
