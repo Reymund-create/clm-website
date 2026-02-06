@@ -22,6 +22,12 @@ export const metadata: Metadata = {
   verification: {
     google: "JElj45SvEVZGptATzhnkZeXuMGmQGwvw3vpXDEI0onc",
   },
+  // This replaces the manual <link> tag for the sitemap
+  alternates: {
+    types: {
+      'application/xml': [{ url: '/ai-sitemap.xml', title: 'AI Sitemap' }],
+    },
+  },
 };
 
 export default function RootLayout({
@@ -31,16 +37,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        {/* LightSite AI Discovery Integration */}
-        <link
-          rel="sitemap"
-          type="application/xml"
-          title="AI Sitemap"
-          href="/ai-sitemap.xml"
-        />
-
-        {/* Schema App Configuration */}
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        {/* Schema App Configuration - Kept as beforeInteractive for early loading */}
         <Script id="schema-config" strategy="beforeInteractive">
           {`
             window.schema_highlighter = {
@@ -49,11 +49,7 @@ export default function RootLayout({
             };
           `}
         </Script>
-      </head>
 
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
         <Header />
         {children}
         <Footer />
@@ -62,23 +58,14 @@ export default function RootLayout({
         <Script
           src="https://cdn.schemaapp.com/javascript/highlight.js"
           strategy="afterInteractive"
-          async
         />
 
-        {/* LightSite Script */}
-        <Script
-          src="https://cdn.lightsite.ai/v2.3.0/llm-delivery.js"
-          strategy="afterInteractive"
-          defer
-          data-apikey="lsai_c5756cc5f6684e33a35d52402d58fa68"
-          data-direct-supabase="true"
-        />
-
-        {/* InLinks */}
+        {/* InLinks Script */}
         <Script
           src="https://jscloud.net/x/49769/inlinks.js"
           strategy="afterInteractive"
         />
+
       </body>
     </html>
   );
