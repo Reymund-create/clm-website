@@ -1,88 +1,37 @@
-# ---- LightSite.ai AI Discovery Rules (October 2025) ----
+# ---- PromptGraph AI Discovery Rules (2026) ----
 User-agent: *
 Allow: /
 
-# OpenAI Crawlers (2025)
+# OpenAI Crawlers
 User-agent: GPTBot
 User-agent: ChatGPT-User
 User-agent: OAI-SearchBot
 Allow: /
-Allow: /.well-known/ai-plugin.json
-Allow: /.well-known/openapi.json
+Allow: /.well-known/ai-manifest.json
+Allow: /openapi.json
 Allow: /ai-sitemap.xml
 
-# Google AI Crawlers (2025)
+# Google AI Crawlers
 User-agent: Google-Extended
 User-agent: Gemini-Pro
-User-agent: GoogleBot-AI
 User-agent: Googlebot
 Allow: /
-Allow: /.well-known/ai-plugin.json
-Allow: /.well-known/openapi.json
 Allow: /ai-sitemap.xml
 
-# Anthropic Claude (2025)
+# Anthropic Claude
 User-agent: ClaudeBot
 User-agent: Claude-Web
-User-agent: anthropic-ai
 Allow: /
-Allow: /.well-known/ai-plugin.json
-Allow: /.well-known/openapi.json
 Allow: /ai-sitemap.xml
 
-# Perplexity AI (2025)
+# Perplexity AI
 User-agent: PerplexityBot
-User-agent: Perplexity-AI
 Allow: /
-Allow: /.well-known/ai-plugin.json
-Allow: /.well-known/openapi.json
 Allow: /ai-sitemap.xml
-
-# Meta AI (2025)
-User-agent: Meta-ExternalAgent
-User-agent: Meta-AI
-User-agent: FacebookBot
-Allow: /
-Allow: /.well-known/ai-plugin.json
-Allow: /.well-known/openapi.json
-Allow: /ai-sitemap.xml
-
-# Microsoft Copilot (2025)
-User-agent: BingBot
-User-agent: Bing-AI
-User-agent: CopilotBot
-Allow: /
-Allow: /.well-known/ai-plugin.json
-Allow: /.well-known/openapi.json
-Allow: /ai-sitemap.xml
-
-# Other AI Platforms (2025)
-User-agent: YouBot
-User-agent: DuckAssistBot
-User-agent: BraveBot
-User-agent: KogiBot
-User-agent: ArcBot
-Allow: /
-Allow: /.well-known/ai-plugin.json
-Allow: /.well-known/openapi.json
-Allow: /ai-sitemap.xml
-
-# Common Crawlers
-User-agent: CCBot
-Allow: /
-Allow: /.well-known/ai-plugin.json
-Allow: /.well-known/openapi.json
-Allow: /ai-sitemap.xml
-
-User-agent: Slurp
-Allow: /
-
-User-agent: DuckDuckBot
-Allow: /
 
 # Crawl Rate
 Crawl-delay: 1
 
 # AI Discovery Sitemaps
-Sitemap: https://fcfkbvculokjmzycbxbj.supabase.co/functions/v1/llm-discovery/public/sitemap.xml?domain=www.confluencelocalmarketing.com
-# ---- LightSite.ai AI Discovery Rules END ----
+Sitemap: https://www.confluencelocalmarketing.com/ai-sitemap.xml
+# ---- PromptGraph AI Discovery Rules END ----
