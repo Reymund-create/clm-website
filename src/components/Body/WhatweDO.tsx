@@ -59,7 +59,7 @@ const FeaturesCarousel: React.FC = () => {
       {/* THE PARALLAX BLUR - Anchored to the top to meet the Hero */}
       <motion.div 
         style={{ y }}
-        className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-full max-w h-[600px] bg-[#267b9a]/20 blur-[100px] rounded-full z-10 pointer-events-none"
+        className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-full max-w h-[500px] bg-[#267b9a]/20 blur-[90px] rounded-full z-10 pointer-events-none"
       />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">

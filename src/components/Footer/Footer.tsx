@@ -37,7 +37,7 @@ const Footer: React.FC = () => {
                 alt="Confluence Marketing Logo"
                 width={200}
                 height={54}
-                className="brightness-0 invert opacity-90"
+                className="h-12 w-auto object-contain"
               />
             </Link>
             <div className="space-y-3 text-sm leading-relaxed">
