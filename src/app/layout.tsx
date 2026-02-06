@@ -22,7 +22,6 @@ export const metadata: Metadata = {
   verification: {
     google: "JElj45SvEVZGptATzhnkZeXuMGmQGwvw3vpXDEI0onc",
   },
-  // This replaces the manual <link> tag for the sitemap
   alternates: {
     types: {
       'application/xml': [{ url: '/sitemap.xml', title: 'Sitemap' }],
