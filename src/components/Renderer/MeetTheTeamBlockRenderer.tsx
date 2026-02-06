@@ -12,6 +12,11 @@ import {
   ServiceRichTextChild
 } from "@/lib/api";
 
+// --- INTERFACES ---
+interface RendererProps {
+  blocks: MeetTheTeamBlock[];
+}
+
 // --- ANIMATION VARIANTS ---
 const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -75,7 +80,6 @@ const renderRichText = (nodes: (ServiceRichTextNode | ServiceRichTextChild)[], t
       case 'list':
         const isOrdered = blockNode.format === 'ordered';
         const ListTag = isOrdered ? 'ol' : 'ul';
-        // Ensure list-style-type is explicitly set and padding is sufficient for bullets
         const listClass = isOrdered
           ? "list-decimal ml-6 mb-8 space-y-2"
           : "list-disc ml-6 mb-8 space-y-2 marker:text-[#267b9a]";
@@ -97,8 +101,8 @@ const renderRichText = (nodes: (ServiceRichTextNode | ServiceRichTextChild)[], t
     }
   });
 };
-// --- TEAM CARD COMPONENT (WITH MODAL) ---
 
+// --- TEAM CARD COMPONENT (Compact + Water Modal) ---
 const TeamCard = ({ card }: { card: MeetTheTeamCardItem }) => {
   const [isOpen, setIsOpen] = useState(false);
   const hasImage = card.image && card.image.url;
@@ -107,45 +111,81 @@ const TeamCard = ({ card }: { card: MeetTheTeamCardItem }) => {
   return (
     <>
       <motion.div
-        layoutId={`card-${card.id}`}
+        layoutId={`card-container-${card.id}`}
         onClick={() => setIsOpen(true)}
         variants={fadeInUp}
-        // Updated Colors: bg-white for cleanliness, hover border to #267b9a
-        className="group relative h-[450px] rounded-[2rem] overflow-hidden cursor-pointer bg-white border border-slate-200 hover:border-[#267b9a]/50 shadow-sm hover:shadow-[0_20px_50px_rgba(38,123,154,0.2)] transition-all duration-500"
+        whileHover={{ y: -5 }}
+        className="group relative flex flex-col items-center p-8 bg-white rounded-[2.5rem] shadow-md hover:shadow-2xl border border-slate-100 cursor-pointer transition-all duration-500 overflow-hidden"
       >
-        {/* Background Image with Parallax-like scale */}
-        {hasImage ? (
-          <Image
-            src={card.image!.url}
-            alt={altText}
-            fill
-            className="object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-slate-50 text-slate-300">
-            <svg className="w-20 h-20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>
+        {/* --- CARD BLOBS (Added 3 extra layers as requested) --- */}
+        
+        {/* Blob 1 (Original Top Left) */}
+        <motion.div 
+          animate={{ borderRadius: ["40% 60% 70% 30%", "60% 40% 30% 70%", "40% 60% 70% 30%"] }}
+          transition={{ duration: 10, repeat: Infinity }}
+          className="absolute -top-8 -left-8 w-24 h-24 bg-[#267b9a]/10 pointer-events-none group-hover:bg-[#267b9a]/20 transition-colors"
+        />
+
+        {/* Blob 2 (Original Bottom Right) */}
+        <motion.div 
+          animate={{ borderRadius: ["30% 70% 60% 40%", "50% 50% 30% 70%", "30% 70% 60% 40%"] }}
+          transition={{ duration: 12, repeat: Infinity }}
+          className="absolute -bottom-8 -right-8 w-28 h-28 bg-[#267b9a]/5 pointer-events-none group-hover:bg-[#267b9a]/15 transition-colors"
+        />
+
+        {/* NEW Blob 3 (Top Right - Faster) */}
+        <motion.div 
+          animate={{ 
+            borderRadius: ["20% 80% 20% 80%", "80% 20% 80% 20%", "20% 80% 20% 80%"],
+            rotate: [0, 90, 0]
+          }}
+          transition={{ duration: 15, repeat: Infinity }}
+          className="absolute top-4 -right-6 w-16 h-16 bg-cyan-400/10 pointer-events-none group-hover:bg-cyan-400/20 transition-colors blur-lg"
+        />
+
+        {/* NEW Blob 4 (Bottom Left - Slow) */}
+        <motion.div 
+          animate={{ 
+            borderRadius: ["60% 40% 50% 50%", "40% 60% 30% 70%", "60% 40% 50% 50%"],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ duration: 18, repeat: Infinity }}
+          className="absolute bottom-10 -left-4 w-12 h-12 bg-[#267b9a]/5 pointer-events-none group-hover:bg-[#267b9a]/15 transition-colors"
+        />
+
+        {/* NEW Blob 5 (Center - Subtle Pulse) */}
+        <motion.div 
+          animate={{ 
+             scale: [0.8, 1.2, 0.8],
+             opacity: [0.02, 0.08, 0.02]
+          }}
+          transition={{ duration: 8, repeat: Infinity }}
+          className="absolute top-1/3 left-1/3 w-32 h-32 rounded-full bg-cyan-600/5 pointer-events-none blur-2xl"
+        />
+
+        {/* Compact Avatar with Pulse Effect */}
+        <div className="relative w-32 h-32 mb-6 z-10 flex items-center justify-center">
+          <div className="absolute inset-0 rounded-full border-2 border-[#267b9a] opacity-0 group-hover:animate-ping" />
+          <div className="relative w-28 h-28 rounded-full border-[3px] border-white shadow-lg overflow-hidden transition-transform group-hover:scale-105">
+            {hasImage ? (
+              <Image src={card.image!.url} alt={altText} fill className="object-cover" />
+            ) : (
+              <div className="w-full h-full bg-slate-100 flex items-center justify-center text-[#267b9a] font-bold text-2xl">
+                {card.title?.[0]}
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
-        {/* Dynamic Overlays - Slate-900 based for brand consistency */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
-
-        {/* Info Overlay (Slides up on hover) */}
-        <div className="absolute inset-x-0 bottom-0 p-8 translate-y-6 group-hover:translate-y-0 transition-transform duration-500 ease-[0.16, 1, 0.3, 1]">
-          <motion.div className="flex flex-col gap-2">
-            <span className="text-[#267b9a] text-[10px] font-black uppercase tracking-[0.2em] bg-white/95 backdrop-blur-md w-fit px-3 py-1 rounded-md shadow-lg">
-              {card.position || "Expert"}
-            </span>
-            <h3 className="text-2xl font-black text-white leading-none mb-2 drop-shadow-md">
-              {card.title}
-            </h3>
-            <p className="text-slate-300 text-sm line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100 leading-relaxed">
-              {card.description}
-            </p>
-            <div className="mt-4 flex items-center gap-2 text-white text-xs font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all duration-500 delay-200">
-              View Profile <span className="w-6 h-px bg-[#267b9a]" />
-            </div>
-          </motion.div>
+        <div className="text-center z-10">
+          <h3 className="text-[#267b9a] text-xl font-black mb-1 tracking-tight">{card.title}</h3>
+          {card.position && (
+            <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest">{card.position}</p>
+          )}
+        </div>
+        
+        <div className="mt-4 opacity-0 group-hover:opacity-100 transition-all duration-500 text-[#267b9a] font-bold text-[10px] uppercase tracking-widest">
+           View Profile →
         </div>
       </motion.div>
 
@@ -164,58 +204,131 @@ const TeamCard = ({ card }: { card: MeetTheTeamCardItem }) => {
 
             {/* Modal Content */}
             <motion.div
-              layoutId={`card-${card.id}`}
-              className="relative w-full max-w-5xl bg-white rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[90vh] md:max-h-none overflow-y-auto md:overflow-visible"
+              layoutId={`card-container-${card.id}`}
+              className="relative w-full max-w-4xl bg-white rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[90vh] md:max-h-none overflow-y-auto md:overflow-visible"
             >
+              {/* Close Button */}
               <button
                 onClick={() => setIsOpen(false)}
-                className="absolute top-6 right-6 z-50 w-12 h-12 bg-white/80 hover:bg-[#267b9a] hover:text-white rounded-full flex items-center justify-center transition-colors group backdrop-blur-sm shadow-sm"
+                className="absolute top-6 right-6 z-50 w-12 h-12 bg-slate-100 hover:bg-[#267b9a] hover:text-white rounded-full flex items-center justify-center transition-colors shadow-sm"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
 
-              {/* Left Side: Large Image */}
-              <div className="w-full md:w-2/5 relative h-[300px] md:h-auto bg-slate-50 border-r border-slate-100">
-                {hasImage && (
-                  <Image
-                    src={card.image!.url}
-                    alt={altText}
-                    fill
-                    className="object-cover"
-                  />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/5" />
+              {/* Left Side: Circular Image with Blobs */}
+              <div className="w-full md:w-2/5 relative min-h-[300px] md:h-auto bg-slate-50 border-r border-slate-100 flex items-center justify-center overflow-hidden">
+                 
+                 {/* --- MODAL BLOBS (Added 3 extra layers as requested) --- */}
+
+                 {/* Blob 1 (Original Large) */}
+                 <motion.div 
+                   animate={{ 
+                     borderRadius: ["30% 70% 70% 30% / 30% 30% 70% 70%", "60% 40% 40% 60% / 60% 60% 40% 40%", "30% 70% 70% 30% / 30% 30% 70% 70%"],
+                     rotate: [0, 10, -10, 0]
+                   }}
+                   transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                   className="absolute w-[140%] h-[140%] bg-[#267b9a]/5 pointer-events-none"
+                 />
+                 
+                 {/* Blob 2 (Original Blur) */}
+                 <motion.div 
+                   animate={{ 
+                     borderRadius: ["50% 50% 20% 80% / 25% 80% 20% 67%", "67% 20% 80% 25% / 80% 20% 67% 25%", "50% 50% 20% 80% / 25% 80% 20% 67%"],
+                   }}
+                   transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+                   className="absolute w-64 h-64 bg-[#267b9a]/10 pointer-events-none blur-xl"
+                 />
+
+                 {/* NEW Blob 3 (Top Right Floating) */}
+                 <motion.div 
+                    animate={{ y: [-10, 10, -10], x: [5, -5, 5] }}
+                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute top-10 right-10 w-32 h-32 bg-cyan-300/10 rounded-full blur-2xl pointer-events-none"
+                 />
+
+                 {/* NEW Blob 4 (Bottom Left Deep) */}
+                 <motion.div 
+                    animate={{ scale: [1, 1.2, 1], rotate: [0, -20, 0] }}
+                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                    className="absolute -bottom-10 -left-10 w-48 h-48 bg-[#267b9a]/5 rounded-[40%] pointer-events-none"
+                 />
+
+                 {/* NEW Blob 5 (Center Pulse) */}
+                 <motion.div 
+                    animate={{ opacity: [0, 0.2, 0], scale: [0.8, 1.1, 0.8] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute w-full h-full bg-cyan-500/5 rounded-full blur-3xl pointer-events-none"
+                 />
+
+                 {/* Circular Image */}
+                 <div className="relative w-48 h-48 md:w-56 md:h-56 rounded-full border-[6px] border-white shadow-2xl z-10">
+                    <div className="relative w-full h-full rounded-full overflow-hidden">
+                      {hasImage ? (
+                        <Image src={card.image!.url} alt={altText} fill className="object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-slate-200 flex items-center justify-center text-[#267b9a] font-bold text-5xl">
+                          {card.title?.[0]}
+                        </div>
+                      )}
+                    </div>
+                 </div>
               </div>
 
-              {/* Right Side: Detailed Bio */}
-              <div className="w-full md:w-3/5 p-8 md:p-16 flex flex-col justify-center bg-white">
+              {/* Right Side: Bio with Ocean Wave Effect */}
+              <div className="w-full md:w-3/5 p-8 md:p-14 flex flex-col justify-center bg-white relative z-10">
+                
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 }}
+                  transition={{ delay: 0.1 }}
+                  className="relative z-20"
                 >
-                  <span className="inline-block text-[#267b9a] font-black uppercase tracking-[0.3em] text-xs mb-4">
+                  <span className="inline-block text-[#267b9a] font-black uppercase tracking-[0.3em] text-[10px] mb-4">
                     {card.position}
                   </span>
-                  <h2 className="text-4xl md:text-5xl font-black text-[#0f172a] mb-6 tracking-tight">
+                  <h2 className="text-4xl font-black text-[#0f172a] mb-6 tracking-tight leading-none">
                     {card.title}
                   </h2>
-                  <div className="w-20 h-1.5 bg-[#267b9a] mb-8 rounded-full" />
-
-                  <div className="prose prose-slate prose-lg max-w-none text-slate-600 leading-relaxed mb-10">
-                    {card.description}
+                  
+                  {/* Flowing Effect on Divider */}
+                  <div className="w-20 h-1.5 mb-8 rounded-full overflow-hidden relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#267b9a] to-cyan-400" />
+                      <motion.div 
+                        animate={{ x: ["-100%", "100%"] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent w-full h-full"
+                      />
                   </div>
 
-                  <div className="flex flex-wrap gap-4">
-                    <Link
-                      href="/contact-us"
-                      className="px-8 py-4 bg-[#267b9a] text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#0f172a] transition-all transform hover:-translate-y-1 shadow-lg shadow-[#267b9a]/20"
-                    >
-                      Book a Session
-                    </Link>
+                  {/* Ocean Wave Effect Description Container */}
+                  <div className="relative w-full mb-10 p-6 rounded-2xl overflow-hidden group/wave">
+                      {/* Background Wave Animation */}
+                      <div className="absolute inset-0 opacity-20 pointer-events-none">
+                          <motion.div 
+                            animate={{ x: ["0%", "-50%"] }}
+                            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                            className="absolute top-0 left-0 w-[200%] h-full flex items-end"
+                          >
+                            {/* SVG Wave */}
+                            <svg className="w-full h-full text-[#267b9a] fill-current" viewBox="0 0 1440 320" preserveAspectRatio="none">
+                              <path fillOpacity="1" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,261.3C960,256,1056,224,1152,197.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+                            </svg>
+                          </motion.div>
+                      </div>
+
+                      <div className="prose prose-slate prose-lg max-w-none text-slate-700 leading-relaxed italic relative z-10">
+                        {card.description}
+                      </div>
                   </div>
+
+                  <Link
+                    href="/contact-us"
+                    className="inline-block px-8 py-4 bg-[#267b9a] text-white rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-[#0f172a] transition-all transform hover:-translate-y-1 shadow-lg shadow-[#267b9a]/20"
+                  >
+                    Connect with {card.title.split(' ')[0]}
+                  </Link>
                 </motion.div>
               </div>
             </motion.div>
@@ -227,10 +340,6 @@ const TeamCard = ({ card }: { card: MeetTheTeamCardItem }) => {
 };
 
 // --- MAIN RENDERER ---
-
-interface RendererProps {
-  blocks: MeetTheTeamBlock[];
-}
 
 export default function MeetTheTeamRenderer({ blocks }: RendererProps) {
   useEffect(() => {
@@ -264,7 +373,7 @@ export default function MeetTheTeamRenderer({ blocks }: RendererProps) {
 
   contentBlocks.forEach((block) => {
     if (block.__component === "elements.card-item") {
-      cardBuffer.push(block);
+      cardBuffer.push(block as MeetTheTeamCardItem);
     } else {
       if (cardBuffer.length > 0) {
         processedBlocks.push({
@@ -388,7 +497,7 @@ export default function MeetTheTeamRenderer({ blocks }: RendererProps) {
                     whileInView="visible"
                     viewport={{ once: true, margin: "-50px" }}
                     variants={staggerContainer}
-                    className="grid md:grid-cols-2 lg:grid-cols-3 gap-10"
+                    className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
                   >
                     {block.cards.map((card: any) => (
                       <TeamCard key={card.id} card={card} />
