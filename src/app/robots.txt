@@ -7,31 +7,31 @@ User-agent: GPTBot
 User-agent: ChatGPT-User
 User-agent: OAI-SearchBot
 Allow: /
-Allow: /.well-known/ai-manifest.json
+Allow: /.well-known/manifest.json
 Allow: /openapi.json
-Allow: /ai-sitemap.xml
+Allow: /sitemap.xml
 
 # Google AI Crawlers
 User-agent: Google-Extended
 User-agent: Gemini-Pro
 User-agent: Googlebot
 Allow: /
-Allow: /ai-sitemap.xml
+Allow: /sitemap.xml
 
 # Anthropic Claude
 User-agent: ClaudeBot
 User-agent: Claude-Web
 Allow: /
-Allow: /ai-sitemap.xml
+Allow: /sitemap.xml
 
 # Perplexity AI
 User-agent: PerplexityBot
 Allow: /
-Allow: /ai-sitemap.xml
+Allow: /sitemap.xml
 
 # Crawl Rate
 Crawl-delay: 1
 
 # AI Discovery Sitemaps
-Sitemap: https://www.confluencelocalmarketing.com/ai-sitemap.xml
+Sitemap: https://www.confluencelocalmarketing.com/sitemap.xml
 # ---- PromptGraph AI Discovery Rules END ----

@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   // This replaces the manual <link> tag for the sitemap
   alternates: {
     types: {
-      'application/xml': [{ url: '/ai-sitemap.xml', title: 'AI Sitemap' }],
+      'application/xml': [{ url: '/sitemap.xml', title: 'Sitemap' }],
     },
   },
 };
