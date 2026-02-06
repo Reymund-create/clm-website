@@ -1,21 +1,23 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  async rewrites() { // Use rewrites instead of redirects
+  async redirects() { // Change back to redirects
     return [
       {
         source: '/ai-sitemap.xml',
         destination: 'https://app.promptgraph.ai/api/v1/confluence-local-marketing/ai-sitemap.xml',
+        permanent: false, 
       },
-      // You can keep the others as redirects or move them here too
       {
         source: '/openapi.json',
         destination: 'https://app.promptgraph.ai/api/v1/confluence-local-marketing/openapi.json',
+        permanent: false,
       },
       {
         source: '/.well-known/ai-manifest.json',
         destination: 'https://app.promptgraph.ai/api/v1/confluence-local-marketing/.well-known/ai-manifest.json',
-      }
+        permanent: false,
+      },
     ];
   },
   images: {
