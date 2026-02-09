@@ -157,7 +157,7 @@ export interface StrapiTextBlock {
 }
 
 export interface StrapiButton {
-  __component?: "elements.button";
+  __component: "elements.button";
   id: number;
   label: string;
   href: string;
@@ -219,15 +219,17 @@ export interface MeetTheTeamBackground {
 export interface MeetTheTeamCardItem {
   __component: "elements.card-item";
   id: number;
-  title: string; // Name
+  title: string;
   description: string;
-  position: string | null;
-  image: MeetTheTeamImage | null;
-  icon: {
+  position?: string;
+  image?: {
+    url: string;
+    alternativeText?: string;
+  };
+  icon?: {
+    iconData: string;
     width: number;
     height: number;
-    iconData: string; // SVG path
-    iconName: string;
   };
 }
 
