@@ -134,8 +134,13 @@ const TeamCard = ({ card }: { card: any }) => {
         layoutId={`card-container-${card.id}`}
         onClick={() => setIsOpen(true)}
         variants={fadeInUp}
-        whileHover={{ y: -5 }}
-        className="group relative flex flex-col items-center p-8 bg-white rounded-[2.5rem] shadow-md hover:shadow-2xl border border-slate-100 cursor-pointer transition-all duration-500 overflow-hidden"
+        // FIX: Only allow hover scaling when the modal is closed to prevent 
+        // the "stuck" shrinking effect when the mouse is over the closing card.
+        // whileHover={!isOpen ? { y: -5 } : {}}
+        // transition={{
+        //   layout: { duration: 0.5, ease: [0.22, 1, 0.36, 1] }
+        // }}
+        className="group relative flex flex-col items-center p-8 bg-white rounded-[2.5rem] shadow-md hover:shadow-2xl border border-slate-100 cursor-pointer-none transition-all duration-500 overflow-hidden"
       >
         {/* --- CARD BLOBS --- */}
         <motion.div
@@ -174,7 +179,7 @@ const TeamCard = ({ card }: { card: any }) => {
                 alt={card.title}
                 fill
                 className="object-cover"
-                unoptimized // Use this if Strapi Cloud doesn't allow Next.js Optimization yet
+                unoptimized
               />
             ) : hasIcon ? (
               renderIcon("w-full h-full flex items-center justify-center p-6 text-[#267b9a]")
@@ -214,14 +219,31 @@ const TeamCard = ({ card }: { card: any }) => {
               layoutId={`card-container-${card.id}`}
               className="relative w-full max-w-4xl bg-white rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[90vh] md:max-h-none overflow-y-auto md:overflow-visible"
             >
-              <button
-                onClick={() => setIsOpen(false)}
-                className="absolute top-6 right-6 z-50 w-12 h-12 bg-slate-100 hover:bg-[#267b9a] hover:text-white rounded-full flex items-center justify-center transition-colors shadow-sm"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+              {/* --- CLOSE BUTTON WITH DARK TEAL ANIMATED BLOB --- */}
+              <div className="absolute top-6 right-6 z-50">
+                {/* Background Glow Blob */}
+                <motion.div
+                  animate={{
+                    scale: [1, 1.3, 1],
+                    borderRadius: ["30% 70% 70% 30% / 30% 30% 70% 70%", "60% 40% 40% 60% / 60% 60% 40% 40%", "30% 70% 70% 30% / 30% 30% 70% 70%"],
+                    rotate: [0, 90, 0]
+                  }}
+                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute inset-0 bg-[#1a5a73] opacity-60 blur-xl scale-125"
+                />
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsOpen(false);
+                  }}
+                  className="relative w-12 h-12 bg-white text-[#267b9a] hover:bg-[#267b9a] hover:text-white rounded-full flex items-center justify-center transition-colors shadow-lg group"
+                >
+                  <svg className="w-6 h-6 transform transition-transform group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
 
               {/* Left Side: Circular Image/Icon with Blobs */}
               <div className="w-full md:w-2/5 relative min-h-[300px] md:h-auto bg-slate-50 border-r border-slate-100 flex items-center justify-center overflow-hidden">
