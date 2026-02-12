@@ -7,7 +7,7 @@ User-agent: GPTBot
 User-agent: ChatGPT-User
 User-agent: OAI-SearchBot
 Allow: /
-Allow: /.well-known/manifest.json
+Allow: /.well-known/ai-manifest.json
 Allow: /openapi.json
 Allow: /sitemap.xml
 
