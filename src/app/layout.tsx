@@ -65,6 +65,17 @@ export default function RootLayout({
           strategy="afterInteractive"
         />
 
+        {/* LLM Tracker Script */}
+        <Script
+          src="https://promptgraph.nyc3.digitaloceanspaces.com/cdn/llm-tracker.js"
+          data-apikey="sk_KlHPWjyxxz2UdT8oOvtsfkJ478ZqX5EX"
+          data-slug="confluence-local-marketing"
+          data-name="Confluence Local Marketing"
+          data-type="Non Dealers"
+          data-url="https://www.confluencelocalmarketing.com"
+          strategy="afterInteractive"
+        />
+
       </body>
     </html>
   );
